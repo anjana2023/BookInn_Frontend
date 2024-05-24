@@ -1,0 +1,22 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Jersey+15&display=swap');
+
+/* tailwind configuration */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* -------------------------- */
+
+@keyframes zigzag {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(5px) rotate(-5deg); }
+    50% { transform: translateX(-5px) rotate(5deg); }
+    75% { transform: translateX(5px) rotate(-5deg); }
+    100% { transform: translateX(0); }
+  }
+  
+  .zigzag-animation {
+    display: inline-block;
+    animation: zigzag 1s infinite;
+  }
+  
