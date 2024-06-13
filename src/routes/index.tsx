@@ -5,7 +5,7 @@ import {
   ProtectedOwnerRoute,
   ProtectedUserRoute,
 } from "./protectedRoutes";
-import { PublicRoutes } from "./publicRoutes";
+import { PublicOwnerRoutes, PublicRoutes } from "./publicRoutes";
 import React from "react";
 import AddHotel from "../pages/owner/AddHotel";
 import HotelDetails from "../pages/user/HotelDetails";
@@ -19,6 +19,10 @@ const Home = lazy(() => import("../pages/Home"));
 const Forgotpassword = lazy(() => import("../pages/user/ForgotPassword"));
 const ResetPassword = lazy(() => import("../pages/user/ResetPassword"));
 const UserProfile = lazy(() => import("../pages/user/Profile"));
+const CheckoutPage= lazy(()=>import("../pages/user/checkout"))
+const PaymentCompleted = lazy(() => import("../components/user/paymentCompleted"));
+const BookingDetails= lazy(()=>import ("../pages/user/BookingDetail"))
+const BookingList = lazy(()=>import("../pages/user/Bookings"))
 
 const OwnerRegister = lazy(() => import("../components/owner/ownerRegister"));
 const OwnerLogin = lazy(() => import("../components/owner/ownerLogin"));
@@ -61,11 +65,19 @@ export const MainRouter = () => {
           <Route path="/" element={<ProtectedUserRoute />}>
             <Route path="/" element={<Home />} /> 
             <Route path="/user/hotelDetails/:id" element={<HotelDetails />} />
+            <Route path="/user/checkout/:id" element={<CheckoutPage />} />
+            <Route path="/payment_status/:id" element={<PaymentCompleted />} />
+            <Route path ="/user/bookings" element={<BookingList/>}/>
+            <Route path="/bookingdetails/:id" element={<BookingDetails/>} />
             <Route path="/user/profile" element={<UserProfile />} />
           </Route>
 
+
+          BookingDetails
+
+
           <Route path="/owner" element={<OwnerHome />} />
-          <Route path="" element={<PublicRoutes />}>
+          <Route path="" element={<PublicOwnerRoutes />}>
             <Route path="/owner/auth/register" element={<OwnerRegister />} />
             <Route path="/owner/auth/login" element={<OwnerLogin />} />
             <Route path="/owner/auth/verifyOtp" element={<OwnerVerifyOtp />} />

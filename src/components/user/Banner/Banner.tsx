@@ -4,12 +4,12 @@ const Banner = () => {
   return (
     <>
       <div
-        className="relative h-[300px] bg-cover bg-center"
+        className="relative h-[400px] bg-cover bg-center"
         style={{ backgroundImage: "url('./../src/assets/images/mal1.jpg')" }}
       >
-        <div className="flex flex-col gap-4 justify-center xl:ml-10 lg:ml-2.5 md:ml-3.5 sm:ml-60 w-full h-full px-3 md:px-0">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
-            Find your next stay
+       <div className="flex flex-col gap-4 justify-center xl:ml-10 lg:ml-2.5 md:ml-3.5 sm:ml-60 w-full h-full px-3 md:px-0">
+          <h1 className="text-4xl md:text-5xl sm:text-6xl font-bold text-white text-animation">
+            Find Your Perfect Stay,<br/>Every Time
           </h1>
         </div>
       </div>

@@ -17,6 +17,17 @@
   
   .zigzag-animation {
     display: inline-block;
-    animation: zigzag 1s infinite;
+    animation: zigzag 2s infinite;
   }
   
+  /* main.css or a CSS module */
+@keyframes moveLeftRight {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(20px); }
+}
+
+.text-animation {
+  display: inline-block;
+  animation: moveLeftRight 2s infinite;
+}
+

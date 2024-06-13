@@ -4,7 +4,7 @@ import { RootState } from "../../../redux/store/store";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../../redux/store/store";
 import { clearUser } from "../../../redux/slices/userSlice";
-import logo from "../../../assets/images/BookInn_logo.png";
+import logo121 from "../../../assets/images/logo121.png";
 
 const Navbar = () => {
   const user = useSelector((state: RootState) => state.userSlice);
@@ -19,12 +19,12 @@ const Navbar = () => {
   return (
     <nav className="sticky top-0 z-10 block w-full max-w-full ps-8 py-2 text-white bg-white rounded-none shadow-md h-max bg-opacity-100 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
       <div className="flex items-center justify-between text-white-gray-900">
-        <Link
-          to="#"
-          className="mr-4 block cursor-pointer py-1.5 text-2xl font-bold text-base font-head leading-relaxed text-orange-500"
-        >
-          BookInn
-        </Link>
+
+      <Link to="/" className="flex items-center space-x-2 rtl:space-x-reverse">
+      <img src={logo121} alt="BookINN" className="h-12" />
+      <span className="text-xl font-medium text-orange-500">BookInn</span>
+    </Link>
+
         <div className="flex items-center gap-4">
           <div className="hidden mr-4 lg:block">
             <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">

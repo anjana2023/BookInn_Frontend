@@ -3,7 +3,7 @@ import { FaSearch, FaCog, FaUser } from "react-icons/fa";
 
 const Navbar: React.FC = () => {
   return (
-    <header className="bg-gray-800 text-white py-4 px-6 flex justify-between items-center">
+    <header className="bg-gray-800 text-white py- px-6 flex justify-between items-center">
       <h1 className="text-3xl font-sem-bold mb-8">BookInn</h1>
       <div className="flex items-center space-x-6">
         <div className="relative">

@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 import ProfileSidebar from "../../components/owner/ProfileSidebar";
 import Navbar from "../../components/owner/Navbar/Navbar";
 import React from "react";
-import HotelDetail from "../../components/owner/HotelDetails";
+import EditHotelForm from "../../components/owner/EditHotel";
 
 
 const OwnerHotelDetails = () => {
@@ -12,7 +12,7 @@ const OwnerHotelDetails = () => {
       <div className="flex flex-row gap-2">
         <ProfileSidebar />
         <main className="flex-grow p-6">
-        <HotelDetail/>
+        <EditHotelForm/>
         <Outlet />
         </main>
       </div>

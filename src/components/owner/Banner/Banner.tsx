@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import owner1 from "../../../assets/images/owner1.jpg";
 
-const names = ["hotel", "apartment", "villas", "resorts"];
+const names = ["Hotel"];
 
 const Banner = () => {
   const [newName, setNewName] = useState("");
@@ -20,10 +20,11 @@ const Banner = () => {
     <div className="relative h-[500px] bg-cover bg-center flex justify-center items-center" style={{ backgroundImage: `url(${owner1})` }}>
       <div className="text-center">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white">
-          <span className="zigzag-animation">List Your</span>{" "}
-          <span className="text-orange-500">{newName}</span>{" "}
-          <span className="zigzag-animation">On</span>{" "}
-          <span className="text-white">BookInn</span>
+          <span className="zigzag-animation">Your</span>{" "}
+          <span className="text-orange-500">{newName},</span>{" "}
+          <span className="zigzag-animation">Their</span>{" "}
+          <span className="text-orange-500">Next </span>
+          <span className="zigzag-animation">Destination</span>{" "}
         </h1>
       </div>
      

@@ -65,7 +65,7 @@ const   HotelVerificationPage = () => {
   return(
     <div className="flex justify-center items-center mt-10">
     <div className="max-w-lg w-full bg-gray-100 p-8 rounded-lg shadow-lg">
-      <img src={hotel?.image} alt="Profile" className="w-44 h-44 mx-auto rounded mb-4" />
+      <img src={hotel?.imageUrls[2]} alt="Profile" className="w-44 h-44 mx-auto rounded mb-4" />
       <h2 className="text-2xl font-bold text-center mb-4">{hotel?.name}</h2>
       <p className="text-gray-700 text-lg text-center mb-4">{hotel?.place}</p>
       <div className="flex justify-center mb-4">

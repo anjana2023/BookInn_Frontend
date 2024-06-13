@@ -7,11 +7,17 @@ export const PublicRoutes: FC = () => {
   const { isAuthenticated, role } = useAppSelector((state) => state.userSlice);
   if (role === "user") {
     return isAuthenticated ? <Navigate to={"/"} replace /> : <Outlet />;
-  } else if (role === "owner") {
-    return isAuthenticated ? <Navigate to={"/owner"} replace /> : <Outlet />;
   } else if (role === "admin") {
     return isAuthenticated ? <Navigate to={"/admin"} replace /> : <Outlet />;
-  } else {
+  } 
     return <Outlet />;
-  }
+  
+};
+
+export const PublicOwnerRoutes: FC = () => {
+  const { isAuthenticated, role } = useAppSelector((state) => state.ownerSlice);
+  if (role === "owner") {
+    return isAuthenticated ? <Navigate to={"/owner"} replace /> : <Outlet />;
+  } 
+    return <Outlet />;
 };

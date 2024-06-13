@@ -16,8 +16,9 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-800 text-white w-64 py-4 px-6 h-full flex flex-col">
-      <ul className="space-y-4">
+    <div className="fixed top-0 left-0 bg-gray-800 text-white w-64 h-full flex flex-col py-4 px-6">
+     <h1 className="text-3xl font-bold  mb-8">BookInn</h1>
+      <ul className="space-y-4 mt-16"> {/* Added mt-16 for top margin */}
         <li>
           <Link
             to="/admin"
@@ -50,7 +51,6 @@ const Sidebar: React.FC = () => {
             Hotels
           </Link>
         </li>
-
         <li>
           <Link
             to="/admin/verified_hotels"
@@ -59,7 +59,14 @@ const Sidebar: React.FC = () => {
             Verified Hotels
           </Link>
         </li>
-
+        <li>
+          <Link
+            to="/admin/bookings"
+            className="block py-2 px-4 rounded-md hover:bg-gray-700"
+          >
+            Bookings
+          </Link>
+        </li>
         <li>
           <button
             onClick={handleLogout}

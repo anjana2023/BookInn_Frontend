@@ -11,7 +11,9 @@ const useHotelDetails = (id: string) => {
   useEffect(() => {
     const fetchHotelDetails = async () => {
       try {
-        const { data } = await axios.get(`${USER_API}/hotelDetails/${id}`);        
+        console.log(`Fetching hotel details for ID: ${id}`);
+        const { data } = await axios.get(`${USER_API}/hotelDetails/${id}`);   
+        console.log("Hotel details fetched successfully:", data.Hotel);     
         setHotel(data.Hotel);
       } catch (error) {
         setError("Failed to fetch hotel details");
@@ -23,7 +25,8 @@ const useHotelDetails = (id: string) => {
 
     fetchHotelDetails();
   }, [id]);
-  console.log(hotel,".............")
+ 
+  console.log("Current hotel state:", hotel);
 
   return { hotel, loading, error };
 };

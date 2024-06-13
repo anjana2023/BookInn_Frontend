@@ -1,34 +1,47 @@
 import { CLOUDINARY_UPLOAD_API, cloudinaryUploadPreset } from "../constants";
 import showToast from "../utils/toast";
+import axios from "axios";
 
-const uploadImagesToCloudinary = async (imageFiles: File | File[]) => {
+const uploadImagesToCloudinary = async (
+  imagesFile: File[]
+): Promise<string[]> => {
   try {
-    const files = Array.isArray(imageFiles) ? imageFiles : [imageFiles];
+    console.log("Images to upload:", imagesFile.length);
 
-    const uploadPromises = files.map(async (imageFile) => {
+    const promises = imagesFile.map(async file => {
+      console.log("Uploading image:", file.name);
+
       const formData = new FormData();
-      formData.append("file", imageFile);
+      formData.append("file", file);
       formData.append("upload_preset", cloudinaryUploadPreset);
 
-      const response = await fetch(CLOUDINARY_UPLOAD_API, {
-        method: "POST",
-        body: formData,
+      const response = await axios.post(CLOUDINARY_UPLOAD_API, formData, {
+        withCredentials: false, // Ensure credentials are not included
       });
+      console.log(response, "response");
+      console.log(response, "response");
+      console.log(response, "response");
+      console.log(response, "response");
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to upload image to Cloudinary: ${response.statusText} - ${errorText}`);
+
+      if (!response) {
+        throw new Error("Failed to upload the image to Cloudinary");
       }
-
-      const data = await response.json();
+      const data = response.data;
       return data.secure_url;
     });
 
-    return Promise.all(uploadPromises);
+    const uploadImageUrls = await Promise.all(promises);
+    console.log("Upload complete...........:", uploadImageUrls);
+    console.log("Upload complete:", uploadImageUrls);
+    console.log("Upload complete:", uploadImageUrls);
+    console.log("Upload complete:", uploadImageUrls);
+
+
+    return uploadImageUrls;
   } catch (error) {
-    console.error("Error uploading image to Cloudinary:", error);
-    showToast("Error uploading image to Cloudinary", "error");
-    throw error;
+    showToast("Error uploading images to Cloudinary", "error");
+    throw error; // Rethrow the error to be caught by the caller
   }
 };
 

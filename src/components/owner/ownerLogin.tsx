@@ -35,10 +35,7 @@ const LoginForm: React.FC = () => {
 
             const access_token = data.accessToken;
             console.log(access_token);
-            console.log(access_token);
-            console.log(access_token);
-            console.log(access_token);
-
+         
             const { name, role, _id } = data.owner;
             console.log(name);
             console.log(role);

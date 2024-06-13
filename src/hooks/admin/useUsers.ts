@@ -3,6 +3,7 @@ import { UserInterface } from "../../types/userInterface";
 import axios from "axios";
 import { ADMIN_API } from "../../constants";
 import showToast from "../../utils/toast";
+import { OwnerInterface } from "../../types/ownerInterface";
 
 axios.defaults.withCredentials = true;
 
@@ -32,7 +33,7 @@ const useUsers = () => {
 };
 
 export const useOwners = () => {
-  const [users, setUsers] = useState<UserInterface[]>([]);
+  const [owners, setOwners] = useState<OwnerInterface[]>([]);
 
   useEffect(() => {
     const fetchOwners = async () => {
@@ -42,8 +43,10 @@ export const useOwners = () => {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         });
-        const { users } = response.data;
-        setUsers(users);
+        const { owners } = response.data;
+
+        console.log(owners)
+        setOwners(owners);
       } catch (error) {
         console.error(error);
         showToast("Failed to fetch owners", "error");
@@ -53,7 +56,7 @@ export const useOwners = () => {
     fetchOwners();
   }, []);
 
-  return { users };
+  return { owners };
 };
 
 export default useUsers;
