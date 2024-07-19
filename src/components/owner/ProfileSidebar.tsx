@@ -1,6 +1,5 @@
 import React from "react";
 import { CgProfile } from "react-icons/cg";
-import { MdFavoriteBorder } from "react-icons/md";
 import { LiaWalletSolid } from "react-icons/lia";
 import { TbBrandBooking } from "react-icons/tb";
 import { Link } from "react-router-dom";
@@ -34,23 +33,13 @@ const ProfileSidebar: React.FC = () => {
           </li>
           <li>
             <Link
-              to="/"
+              to="/owner/bookings"
               className="flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group"
             >
               <LiaWalletSolid className="w-6 h-6 text-gray-400 transition duration-75 group-hover:text-white" />
               <span className="ml-3">Bookings</span>
             </Link>
           </li>
-          {/* Uncomment and update the following section if needed */}
-          {/* <li>
-            <Link
-              to="/"
-              className="flex items-center p-2 text-white rounded-lg hover:bg-gray-700 group"
-            >
-              <MdFavoriteBorder className="w-6 h-6 text-gray-400 transition duration-75 group-hover:text-white" />
-              <span className="ml-3">Favorites</span>
-            </Link>
-          </li> */}
         </ul>
       </div>
     </aside>

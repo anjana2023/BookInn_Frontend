@@ -26,14 +26,18 @@ export const RegisterValidation = yup.object().shape({
     .min(10, "Minimum 10 numbers required")
     .max(10, "Maximum 10 numbers required")
     .required("Phone number is required"),
-  password: yup
+    password: yup
     .string()
-    .min(4, "Minimum 4 characters required")
+    .min(8, "Minimum 8 characters required")
+    .matches(
+      /^(?=.*[0-9])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+      "Password must contain at least one digit and one special character"
+    )
     .required("Password is required")
     .test(
       "no-spaces-dots",
       "Password must not contain spaces or dots",
-      noSpacesOrDots
+      (value) => !/\s/.test(value) && !/\./.test(value)
     ),
   cpassword: yup
     .string()
@@ -42,7 +46,7 @@ export const RegisterValidation = yup.object().shape({
     .test(
       "no-spaces-dots",
       "Confirm password must not contain spaces or dots",
-      noSpacesOrDots
+      (value) => !/\s/.test(value) && !/\./.test(value)
     ),
 });
 
@@ -105,21 +109,8 @@ export const hotelAddValidation = yup.object().shape({
       .required("Pincode is required"),
     country: yup.string().required("Country is required"),
   }),
-  room: yup
-    .number()
-    .positive("Room must be a positive number")
-    .integer("Room must be an integer")
-    .required("Room is required"),
-  guests: yup
-    .number()
-    .positive("Guests must be a positive number")
-    .integer("Guests must be an integer")
-    .required("Guests is required"),
+ 
 
-  price: yup
-    .number()
-    .positive("Price must be a positive number")
-    .required("Price is required"),
   description: yup.string().required("Description is required"),
   amenities: yup
     .array()

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { UserInterface } from "../../types/userInterface";
-import axios from "axios";
+import axiosJWT from "../../utils/axiosService";
 import { ADMIN_API } from "../../constants";
 import showToast from "../../utils/toast";
 import { OwnerInterface } from "../../types/ownerInterface";
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 const useUsers = () => {
   const [users, setUsers] = useState<UserInterface[]>([]);
@@ -13,11 +13,7 @@ const useUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(ADMIN_API + "/users", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        });
+        const response = await axiosJWT.get(ADMIN_API + "/users"  );
         const { users } = response.data;
         setUsers(users);
       } catch (error) {
@@ -38,11 +34,7 @@ export const useOwners = () => {
   useEffect(() => {
     const fetchOwners = async () => {
       try {
-        const response = await axios.get(ADMIN_API + "/owners", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        });
+        const response = await axiosJWT.get(ADMIN_API + "/owners");
         const { owners } = response.data;
 
         console.log(owners)

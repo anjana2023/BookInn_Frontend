@@ -1,4 +1,4 @@
-import axios from "axios"
+import axiosJWT from "../../utils/axiosService"
 import { useEffect, useState } from "react"
 import { ADMIN_API } from "../../constants"
 import { HotelInterface } from "../../types/hotelInterface"
@@ -10,11 +10,8 @@ const useHotelList = () => {
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const { data } = await axios.get(`${ADMIN_API}/hotels`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        })
+        const { data } = await axiosJWT.get(`${ADMIN_API}/hotels`
+        )
         setHotels(data.Hotels)
       } catch (error) {
         setError("Failed to fetch hotels")

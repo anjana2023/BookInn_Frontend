@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosJWT from '../../utils/axiosService';
 import { HotelInterface } from '../../types/hotelInterface';
 import { ADMIN_API } from '../../constants';
 
@@ -11,8 +11,9 @@ const useHotelDetails = (id: string) => {
   useEffect(() => {
     const fetchHotelDetails = async () => {
       try {
-        const { data } = await axios.get(`${ADMIN_API}/hotelDetails/${id}`);        
+        const { data } = await axiosJWT.get(`${ADMIN_API}/hotelDetails/${id}`);        
         setHotel(data.Hotel);
+        console.log(data,"//////////////////////////")
       } catch (error) {
         setError("Failed to fetch hotel details");
         console.error(error);

@@ -16,28 +16,23 @@ const uploadImagesToCloudinary = async (
       formData.append("upload_preset", cloudinaryUploadPreset);
 
       const response = await axios.post(CLOUDINARY_UPLOAD_API, formData, {
-        withCredentials: false, // Ensure credentials are not included
+        withCredentials: false,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        }, 
       });
       console.log(response, "response");
-      console.log(response, "response");
-      console.log(response, "response");
-      console.log(response, "response");
-
-
-      if (!response) {
-        throw new Error("Failed to upload the image to Cloudinary");
+      if (!response.data || !response.data.secure_url) {
+        throw new Error("Failed to upload the file to Cloudinary");
       }
       const data = response.data;
+      console.log(data.secure_url,"////////////////////////url")
       return data.secure_url;
     });
 
     const uploadImageUrls = await Promise.all(promises);
     console.log("Upload complete...........:", uploadImageUrls);
     console.log("Upload complete:", uploadImageUrls);
-    console.log("Upload complete:", uploadImageUrls);
-    console.log("Upload complete:", uploadImageUrls);
-
-
     return uploadImageUrls;
   } catch (error) {
     showToast("Error uploading images to Cloudinary", "error");

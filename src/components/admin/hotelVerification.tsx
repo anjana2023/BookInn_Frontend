@@ -5,7 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom'; // Import useHistory 
 import { ADMIN_API } from '../../constants';
 import showToast from '../../utils/toast';
 import { HotelInterface } from '../../types/hotelInterface';
-import axios from 'axios';
+import axiosJWT from "../../utils/axiosService";
 
 
 const   HotelVerificationPage = () => {
@@ -20,7 +20,7 @@ const   HotelVerificationPage = () => {
     useEffect(() => {
       const fetchHotelDetails = async () => {
         try {
-          const { data } = await axios.get(`${ADMIN_API}/hotelDetails/${id}`);        
+          const { data } = await axiosJWT.get(`${ADMIN_API}/hotelDetails/${id}`);        
           setHotel(data.Hotel);
         } catch (error) {
           setError("Failed to fetch hotel details");
@@ -39,7 +39,7 @@ const   HotelVerificationPage = () => {
           setShowModal(true);
         } else {
           try {
-            const response = await axios.patch(`${ADMIN_API}/verify_hotel/${id}`, { status });
+            const response = await axiosJWT.patch(`${ADMIN_API}/verify_hotel/${id}`, { status });
             showToast(response.data.message,"success")
             navigate('/admin/hotels');
           } catch (error) {
@@ -50,7 +50,7 @@ const   HotelVerificationPage = () => {
     
       const handleRejectConfirm = async () => {
         try {
-          const response = await axios.patch(`${ADMIN_API}/verify_hotel_rejection/${id}`, { status: 'rejected', reason: rejectionReason });
+          const response = await axiosJWT.patch(`${ADMIN_API}/verify_hotel_rejection/${id}`, { status: 'rejected', reason: rejectionReason });
           console.log(response.data.message);
           setShowModal(false);
           navigate('/admin/hotels');

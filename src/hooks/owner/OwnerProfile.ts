@@ -26,12 +26,8 @@ const useOwnerProfile = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
-    axios
-      .get(OWNER_API + "/profile", {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
+    axiosJWT
+      .get(OWNER_API + "/profile")
       // .then(({ data }) => {
       //   console.log('then..................',data);
       //   const { owner } = data.user;
@@ -126,11 +122,6 @@ const handleSubmit = async () => {
           phoneNumber: formData.phone,
           profilePic: profilePicUrl,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
       );
 
       showToast("Profile updated successfully");

@@ -1,16 +1,22 @@
-import React from 'react'
-import Navbar from '../../components/user/NavBar/Navbar'
-import BookingsListPage from '../../components/user/Bookings'
-import Footer from '../../components/user/Footer/Footer'
+import React from "react";
+import Navbar from "../../components/user/NavBar/Navbar";
+import ProfileSidebar from "../../components/user/ProfileSidebar";
+import { Outlet } from "react-router-dom";
+import BookingsListPage from "../../components/user/Bookings";
 
-const BookingsList:React.FC= () => {
+const Profile = () => {
   return (
-    <div>
-      <Navbar/>
-      <BookingsListPage/>
-      <Footer/>
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <div className="flex flex-row flex-grow">
+        <ProfileSidebar />
+        <main className="flex-grow p-6 bg-gray-100">
+          <BookingsListPage />
+          <Outlet />
+        </main>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default BookingsList
+export default Profile;

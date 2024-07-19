@@ -10,7 +10,7 @@ import {
 } from "../../utils/localStorage";
 
 const VerifyOtp: React.FC = () => {
-  const [seconds, setSeconds] = useState(60);
+  const [seconds, setSeconds] = useState(121);
 
   const navigate = useNavigate();
   const formik = useFormik({
@@ -19,6 +19,7 @@ const VerifyOtp: React.FC = () => {
     },
     onSubmit: (values) => {
       const userid = getItemFromLocalStorage("userId");
+      console.log(userid,"......userid...........")
       const otp = values.otp.join("");
       if (userid) {
         axios

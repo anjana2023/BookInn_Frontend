@@ -15,23 +15,19 @@ const useProfile = () => {
     name: string;
     phone: string;
     email: string;
-    imageFile: File | null;
+    imageFile: File[];
   }>({
     name: "",
     phone: "",
     email: "",
-    imageFile: null,
+    imageFile: [],
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
-    axios
-      .get(USER_API + "/profile", {
-        headers: {
-          authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
+    axiosJWT
+      .get(USER_API + "/profile")
       .then(({ data }) => {
         const { user } = data;
         setProfile(user);
@@ -63,7 +59,7 @@ const useProfile = () => {
         reader.readAsDataURL(file);
         setFormData((prev) => ({
           ...prev,
-          imageFile: file,
+          imageFile: [file],
         }));
       }
     } else {
@@ -91,13 +87,13 @@ const useProfile = () => {
     }
   };
 
-
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!nameError && !phoneError) {
       setIsSubmitting(true);
 
       try {
-        const url = formData.imageFile
+        const url = formData.imageFile.length > 0
           ? await uploadImagesToCloudinary(formData.imageFile)
           : profile?.profilePic;
 
@@ -109,11 +105,6 @@ const useProfile = () => {
             name: formData.name,
             phoneNumber: formData.phone,
             profilePic: profilePicUrl || profile?.profilePic,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
           }
         );
 

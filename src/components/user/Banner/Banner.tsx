@@ -1,37 +1,53 @@
 import React from "react";
+import SearchBoxUser from "../searchBox";
+import useUserHotels from "../../../hooks/user/useUserHotel";
+import doc1 from "../../../assets/images/doc1.svg";
+import doc2 from "../../../assets/images/doc2.svg";
+import doc3 from "../../../assets/images/doc3.svg";
 
-const Banner = () => {
+const Banner: React.FC = () => {
+  const { handleSearch } = useUserHotels();
+
   return (
-    <>
-      <div
-        className="relative h-[400px] bg-cover bg-center"
-        style={{ backgroundImage: "url('./../src/assets/images/mal1.jpg')" }}
-      >
-       <div className="flex flex-col gap-4 justify-center xl:ml-10 lg:ml-2.5 md:ml-3.5 sm:ml-60 w-full h-full px-3 md:px-0">
-          <h1 className="text-4xl md:text-5xl sm:text-6xl font-bold text-white text-animation">
-            Find Your Perfect Stay,<br/>Every Time
+    <div className="relative h-[400px] overflow-hidden">
+      <div className="absolute inset-0  justify-center">
+        <div className="text-center text-white px-6 md:px-12">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+            Find Your Perfect Stay,<br />Every Time
           </h1>
         </div>
       </div>
-      <section className="flex items-center border border-Red-200 justify-center p-2 container mx-auto rounded-lg h-auto relative bg-[#FFFFF] max-w-3xl -mt-8">
-        <input
-          className="shadow rounded py-2 px-10 text-gray-700 w-1/4 mr-2"
-          type="text"
-          placeholder="Where are you going?"
-        />
-        <input
-          className="shadow rounded py-3 px-10 text-gray-700 w-1/4 mr-2"
-          type="date"
-        />
-        <input
-          className="shadow rounded py-3 px-10 text-gray-700 w-1/4 mr-2"
-          type="date"
-        />
-        <button className="bg-orange-500 hover:bg-blue-600 text-white font-bold py-2 px-10 rounded w-1/4">
-          Search
-        </button>
-      </section>
-    </>
+      
+      <div className="relative z-10 flex flex-col md:flex-row justify-around items-center text-center px-6 md:px-12 py-6 bg-white">
+        <div className="flex flex-col items-center">
+          <img
+            className="w-32 h-32 object-cover mb-4"
+            src={doc1}
+            alt="Search"
+          />
+          <p className="text-lg font-semibold">Search simply</p>
+          <p>Search through 5 million hotels in just a few seconds.</p>
+        </div>
+        <div className="flex flex-col items-center my-6 md:my-0">
+          <img
+            className="w-32 h-32 object-cover mb-4"
+            src={doc2}
+            alt="Compare"
+          />
+          <p className="text-lg font-semibold">Compare confidently</p>
+          <p>Compare hotel prices from 100s of sites at once.</p>
+        </div>
+        <div className="flex flex-col items-center">
+          <img
+            className="w-32 h-32 object-cover mb-4"
+            src={doc3}
+            alt="Save"
+          />
+          <p className="text-lg font-semibold">Save big</p>
+          <p>Discover a great deal to book on our partner sites.</p>
+        </div>
+      </div>
+    </div>
   );
 };
 

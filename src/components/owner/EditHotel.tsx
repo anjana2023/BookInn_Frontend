@@ -1,29 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { FaTrashAlt } from 'react-icons/fa';
-import * as Yup from 'yup';
-import useHotelDetails from '../../hooks/owner/useHotelDetail';
-import { HotelInterface } from '../../types/hotelInterface';
-import PhotoUploadModal from './photoUploadModal';
-import { OWNER_API } from '../../constants';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import showToast from '../../utils/toast';
+import { FC, useState, useEffect, SetStateAction } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { hotelAddValidation } from "../../utils/validation";
+import { FaTrashAlt } from "react-icons/fa";
+import axios from "axios";
+import { HotelInterface } from "../../types/hotelInterface";
+import showToast from "../../utils/toast";
+import { useNavigate, useParams } from "react-router-dom";
+import PhotoUploadModal from "../../components/owner/photoUploadModal";
+import { OWNER_API } from "../../constants";
+import { useFetchData } from "../../utils/fetcher";
+import UploadButton from "../../components/UploadButton";
+import OutlinedButton from "../../components/OutlinedButton";
+import React from "react";
+import axiosJWT from "../../utils/axiosService";
+import AutoCompleteInput from "./AutoCompleteInput";
 
-const EditHotelForm: React.FC = () => {
+const EditHotelForm: FC = () => {
+  const [hotelData, setHotelData] = useState<HotelInterface | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
-  
-  if (!id) {
-    return <p>Error: No hotel ID provided.</p>;
-  }
-
-  const { hotel, loading, error } = useHotelDetails(id);
+  const navigate = useNavigate();
+  const StayTypes = ["Flat/Appartment", "Hotel", "Villa"];
+  const [images, setImages] = useState<(string | null)[]>([]);
+  const [hotelDocument, setHotelDocument] = useState<
+    (string | ArrayBuffer | null)[]
+  >([]);
+  const [propertyRules, setPropertyRules] = useState<string[]>([]);
+  const [newRule, setNewRule] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [images, setImages] = useState<string[]>([]);
-  const [newRule, setNewRule] = useState<string>('');
-  // const reservationTypes = ['instant', 'approveDecline'];
-  const StayTypes = ['House', 'Flat/Appartment', 'Hotel', 'HouseBoat', 'Villa'];
-  const allAmenities = [
+  const [isHotelModalOpen, setIsHotelModalOpen] = useState(false);
+
+  const [coordinates, setcoordinates] = useState({
+    searchLocation: "",
+    location: [0, 0] as [number, number],
+  });
+
+  const amenitiesList = [
     "Swimming Pool",
     "Gym",
     "Spa",
@@ -37,402 +50,570 @@ const EditHotelForm: React.FC = () => {
     "Hot tub",
     "Beach Access",
   ];
+
   useEffect(() => {
-    if (hotel) {
-      setImages(hotel.imageUrls || []);
+    const fetchHotelData = async () => {
+      try {
+        console.log("helloooo,..............");
+        const { data } = await axiosJWT.get(`${OWNER_API}/hotelDetails/${id}`);
+        setHotelData(data.Hotel);
+        setImages(data.Hotel.imageUrls || []);
+        setHotelDocument(
+          data.Hotel.hotelDocument ? [data.Hotel.hotelDocument] : []
+        );
+        setPropertyRules(data.Hotel.propertyRules || []);
+        setcoordinates({
+          searchLocation: data.Hotel.place || "",
+          location: data.Hotel.location?.coordinates || [0, 0],
+        });
+        console.log(data.Hotel, "fetched hotel data here ");
+      } catch (error) {
+        setError("Failed to fetch hotel details");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (id) {
+      // Ensure id is defined
+      fetchHotelData();
     }
-  }, [hotel]);
+
+    return () => {
+      console.log("return useffect");
+    };
+  }, []);
+
+  const addPropertyRule = () => {
+    if (newRule.trim() !== "") {
+      setPropertyRules([...propertyRules, newRule]);
+      setNewRule("");
+    }
+  };
+
+  const removePropertyRule = (index: number) => {
+    setPropertyRules(propertyRules.filter((_, i) => i !== index));
+  };
 
   const handleUpload = (uploadedImages: string[]) => {
     setImages([...images, ...uploadedImages]);
+
     setIsModalOpen(false);
+  };
+
+  const handleHotelDocumentUpload = (
+    imageUrls: SetStateAction<(string | ArrayBuffer | null)[]>
+  ) => {
+    setHotelDocument(imageUrls);
+    setIsHotelModalOpen(false);
   };
 
   const handleRemoveImage = (imageToRemove: string) => {
     setImages(images.filter((image) => image !== imageToRemove));
   };
 
-  const initialValues: Partial<HotelInterface> = {
-    name: hotel?.name || '',
-    place: hotel?.place || '',
-    email: hotel?.email || '',
-    address: hotel?.address || {
-      streetAddress: '',
-      landMark: '',
-      district: '',
-      city: '',
-      pincode: '',
-      country: '',
-    },
-    room: hotel?.room || 0,
-    guests: hotel?.guests || 0,
-    price: hotel?.price || '',
-    description: hotel?.description || '',
-    propertyRules: hotel?.propertyRules || [],
-    amenities: hotel?.amenities || [],
-    // reservationType: hotel?.reservationType || '',
-    stayType:hotel?.stayType||'',
-    imageUrls: hotel?.imageUrls || [],
+  const handleRemoveHotelDocument = () => {
+    setHotelDocument([]);
   };
 
-  const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Name is required'),
-    place: Yup.string().required('Place is required'),
-    email: Yup.string().email('Invalid email').required('Email is required'),
-    address: Yup.object().shape({
-      streetAddress: Yup.string().required('Street address is required'),
-      landMark: Yup.string().required('Landmark is required'),
-      district: Yup.string().required('District is required'),
-      city: Yup.string().required('City is required'),
-      pincode: Yup.string().required('Pincode is required'),
-      country: Yup.string().required('Country is required'),
-    }),
-    room: Yup.number().required('Room count is required'),
-    guests: Yup.number().required('Guests count is required'),
-    price: Yup.string().required('Price is required'),
-    description: Yup.string().required('Description is required'),
-    propertyRules: Yup.array().of(Yup.string()).required('Property rules are required'),
-    amenities: Yup.array().of(Yup.string()).required('Amenities are required'),
-    imageUrls: Yup.array().of(Yup.string()).required('Images are required'),
-  });
- 
-
-  const onSubmit = async (values: Partial<HotelInterface>, { setSubmitting }: any) => {
+  const handleReapply = async () => {
     try {
-        const response = await axios.patch(`${OWNER_API}/hotelDetails/edit/${id}`, {
-            ...values,
-            imageUrls: images,
-          },
-          {
-            headers: {
-              authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          }
-        );
-      console.log('Hotel details updated successfully:', response.data);
-      showToast("Hotel details updated successfully", "success");
-     
+      const response = await axiosJWT.put(
+        `${OWNER_API}/reapply_verification/${id}`,
+        {
+          status: "pending",
+        }
+      );
+      if (response.status >= 200 && response.status < 300) {
+        showToast("Reapplied");
+        navigate("/owner/hotels");
+        setIsModalOpen(false);
+      } else {
+        console.error("Failed to reapply verification");
+      }
     } catch (error) {
-      showToast("Hotel details updated successfully", "success");
-      console.error('Failed to update hotel details:', error);
-      
-    } finally {
-      setSubmitting(false);
+      console.log(error);
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  const handleSubmit = async (values: HotelInterface) => {
+    try {
+      const response = await axiosJWT.patch(`${OWNER_API}/editHotel/${id}`, {
+        name: values.name,
+        place: values.place,
+        address: {
+          streetAddress: values.address.streetAddress,
+          landMark: values.address.landMark,
+          district: values.address.district,
+          city: values.address.city,
+          pincode: values.address.pincode,
+          country: values.address.country,
+        },
+        stayType: values.stayType,
+        description: values.description,
+        amenities: values.amenities,
+        propertyRules,
+        imageUrls: images,
+        hotelDocument: hotelDocument[0],
+        location: {
+          type: "Point",
+          coordinates: coordinates.location,
+        },
+        isVerified: "pending",
+      });
+      showToast(response.data.message);
+      console.log(response.data, "responseeee");
+      navigate("/owner/hotels");
+    } catch (error) {
+      console.error("Error updating hotel:", error);
+      showToast("Failed to update hotel details", "error");
+    }
+  };
 
   return (
-    <Formik
-    initialValues={initialValues}
-    validationSchema={validationSchema}
-    onSubmit={onSubmit}
-    enableReinitialize
-  >
-    {({ values, setFieldValue }) => (
-      <Form className="w-full max-w-4xl mx-auto p-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-gray-700 text-lg font-bold mb-2">Hotel Name:</label>
-            <Field
-              type="text"
-              name="name"
-              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-              placeholder="Enter hotel name"
-            />
-            <span className="text-Strawberry_red text-sm"><ErrorMessage name="name" /></span>
-          </div>
-          <div>
-            <label className="text-gray-700 text-lg font-bold mb-2">Place:</label>
-            <Field
-              type="text"
-              name="place"
-              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-              placeholder="Enter the place"
-            />
-            <span className="text-Strawberry_red text-sm"><ErrorMessage name="place" /></span>
-          </div>
-          <div>
-            <label className="text-gray-700 text-lg font-bold mb-2">Email:</label>
-            <Field
-              type="email"
-              name="email"
-              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-              placeholder="Enter email"
-            />
-            <span className="text-Strawberry_red text-sm"><ErrorMessage name="email" /></span>
-          </div>
-          
-          <div>
-            <label className="text-gray-700 text-lg font-bold mb-2">Rooms:</label>
-            <Field
-              type="number"
-              name="room"
-              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-              placeholder="Enter number of rooms"
-            />
-            <span className="text-Strawberry_red text-sm"><ErrorMessage name="room" /></span>
-          </div>
-          <div>
-            <label className="text-gray-700 text-lg font-bold mb-2">Guests:</label>
-            <div className="relative flex items-center max-w-[8rem]">
-              <button
-                type="button"
-                onClick={() => setFieldValue("guests", Math.max(0, values.guests - 1))}
-                className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-              >
-                <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                </svg>
-              </button>
-              <Field
-                type="number"
-                name="guests"
-                className="w-full bg-gray-50 text-gray-900 text-center rounded-none border-0 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white focus:ring-0 dark:focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={() => setFieldValue("guests", values.guests + 1)}
-                className="bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
-              >
-                <svg className="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                </svg>
-              </button>
-            </div>
-            <span className="text-Strawberry_red text-sm"><ErrorMessage name="guests" /></span>
-          </div>
-          <div>
-            <label className="text-gray-700 text-lg font-bold mb-2">Price:</label>
-            <Field
-              type="text"
-              name="price"
-              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-              placeholder="Enter price"
-            />
-            <span className="text-Strawberry_red text-sm"><ErrorMessage name="price" /></span>
-          </div>
-          <div className="col-span-2">
-            <label className="text-gray-700 text-lg font-bold mb-2">Description:</label>
-            <Field
-              as="textarea"
-              name="description"
-              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-              placeholder="Enter description"
-            />
-            <span className="text-Strawberry_red text-sm"><ErrorMessage name="description" /></span>
-          </div>
-          {/* <div className="col-span-2">
-            <label className="text-gray-700 text-lg font-bold mb-2">Reservation Type:</label>
-            <Field
-                as="select"
-                name="reservationType"
-                className="block w-full px-4 py-2 mt-2 text-gray-700  border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600   focus:outline-none focus:ring"
-              >
-                {reservationTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </Field>
-            <span className="text-Strawberry_red text-sm"><ErrorMessage name="reservationType" /></span>
-          </div> */}
-          <div>
-              <label className="text-gray-700 text-lg font-bold mb-2">Stay Type:</label>
-              <Field
-                as="select"
-                name="stayType"
-                className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-              >
-                <option value="">Select stay type</option>
-                {StayTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </Field>
-              <span className="text-Strawberry_red text-sm">
-                <ErrorMessage name="stayType" />
-              </span>
-            </div>
-            
-            <div className="col-span-2">
-              <label className="text-gray-700 text-lg font-bold mb-2">Amenities:</label>
-              <div className="grid grid-cols-2 gap-2">
-                {allAmenities.map((amenity) => (
-                  <div key={amenity} className="flex items-center">
-                    <Field
-                      type="checkbox"
-                      name="amenities"
-                      value={amenity}
-                      className="mr-2"
-                      checked={values.amenities?.includes(amenity)}
-                    />
-                    <label>{amenity}</label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          <div className="col-span-2">
-            <label className="text-gray-700 text-lg font-bold mb-2">Property Rules:</label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {values.propertyRules && values.propertyRules.map((rule, index) => (
-                <div key={index} className="flex items-center space-x-2 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 px-2 py-1 rounded-lg">
-                  <span>{rule}</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const updatedRules = values.propertyRules?.filter((_, i) => i !== index);
-                      setFieldValue('propertyRules', updatedRules);
-                    }}
-                    className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-600"
-                  >
-                    <FaTrashAlt />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <div className="flex items-center">
-              <Field
-                type="text"
-                name="newRule"
-                value={newRule}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewRule(e.target.value)}
-                placeholder="Add new rule"
-                className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  if (newRule) {
-                    setFieldValue('propertyRules', [...values.propertyRules!, newRule]);
-                    setNewRule('');
-                  }
-                }}
-                className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-          <div className="col-span-2">
-              <label className="text-gray-700 text-lg font-bold mb-2">Street Address:</label>
-              <Field
-                type="text"
-                name="address.streetAddress"
-                className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                placeholder="Enter street address"
-              />
-              <span className="text-Strawberry_red text-sm">
-                <ErrorMessage name="address.streetAddress" />
-              </span>
-            </div>
-            <div>
-              <label className="text-gray-700 text-lg font-bold mb-2">Landmark:</label>
-              <Field
-                type="text"
-                name="address.landMark"
-                className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                placeholder="Enter landmark"
-              />
-              <span className="text-Strawberry_red text-sm">
-                <ErrorMessage name="address.landMark" />
-              </span>
-            </div>
-            <div>
-              <label className="text-gray-700 text-lg font-bold mb-2">District:</label>
-              <Field
-                type="text"
-                name="address.district"
-                className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                placeholder="Enter district"
-              />
-              <span className="text-Strawberry_red text-sm">
-                <ErrorMessage name="address.district" />
-              </span>
-            </div>
-            <div>
-              <label className="text-gray-700 text-lg font-bold mb-2">City:</label>
-              <Field
-                type="text"
-                name="address.city"
-                className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                placeholder="Enter city"
-              />
-              <span className="text-Strawberry_red text-sm">
-                <ErrorMessage name="address.city" />
-              </span>
-            </div>
-            <div>
-              <label className="text-gray-700 text-lg font-bold mb-2">Pincode:</label>
-              <Field
-                type="text"
-                name="address.pincode"
-                className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                placeholder="Enter pincode"
-              />
-              <span className="text-Strawberry_red text-sm">
-                <ErrorMessage name="address.pincode" />
-              </span>
-            </div>
-            <div>
-              <label className="text-gray-700 text-lg font-bold mb-2">Country:</label>
-              <Field
-                type="text"
-                name="address.country"
-                className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
-                placeholder="Enter country"
-              />
-              <span className="text-Strawberry_red text-sm">
-                <ErrorMessage name="address.country" />
-              </span>
-            </div>
-          <div className="col-span-2">
-            <label className="text-gray-700 text-lg font-bold mb-2">Images:</label>
-            <div className="flex flex-wrap gap-4">
-              {images.map((image, index) => (
-                <div key={index} className="relative">
-                  <img src={image} alt={`Uploaded ${index}`} className="w-32 h-32 object-cover rounded-lg" />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveImage(image)}
-                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-700"
-                  >
-                    <FaTrashAlt />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={() => setIsModalOpen(true)}
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-            >
-              Upload Images
-            </button>
-          </div>
-        </div>
-        <div className="flex justify-end mt-6">
-          <button
-            type="submit"
-            className="px-6 py-2 leading-5 text-white transition-colors duration-200 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
-          >
-            Submit
-          </button>
-        </div>
-        <PhotoUploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onUpload={handleUpload} file={'5'} />
-      </Form>
-    )}
-  </Formik>
-);
-};
+    <>
+      <Formik
+        enableReinitialize
+        initialValues={{
+          name: hotelData?.name || "",
+          stayType: hotelData?.stayType || "",
+          place: hotelData?.place || "",
+          address: {
+            streetAddress: hotelData?.address.streetAddress || "",
+            landMark: hotelData?.address.landMark || "",
+            district: hotelData?.address.district || "",
+            city: hotelData?.address.city || "",
+            pincode: hotelData?.address.pincode || "",
+            country: hotelData?.address.country || "",
+          },
+          description: hotelData?.description || "",
+          amenities: hotelData?.amenities || [],
+          location: {
+            type: hotelData?.location?.type || "",
+            coordinates: hotelData?.location?.coordinates || [0, 0],
+          },
+        }}
+        validationSchema={hotelAddValidation}
+        validate={(values) => {
+          const errors: any = {};
 
+          // Validate propertyrules
+          if (propertyRules.length < 2) {
+            errors.propertyRules = "At least two rules are required";
+          }
+
+          // Validate images
+          if (images.length < 3) {
+            errors.images = "At least 3 images are required";
+          } else if (images.length > 5) {
+            errors.images = "No more than 5 images are allowed";
+          }
+
+          if (hotelDocument.length < 1) {
+            errors.hotelDocument = "Hotel documentation is required";
+          }
+
+          return errors;
+        }}
+        onSubmit={handleSubmit}
+      >
+        {({ values, setFieldValue, dirty }) => (
+          <div className="px-4 py-7 md:px-14 flex justify-center">
+            <div className="px-4 py-7 md:px-14 rounded-3xl shadow-lg border border-spacing-y-9  w-8/12   items-center ">
+              <h1 className="p-6 text-2xl md:text-3xl font-bold mb-4 text-center">
+                Edit Hotel
+              </h1>
+              <Form>
+                <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
+                  <div>
+                    <label className="text-gray-700 text-lg font-bold mb-2">
+                      Name:
+                    </label>
+                    <Field
+                      type="text"
+                      name="name"
+                      className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                      placeholder="Name"
+                    />
+                    <span className="text-red-500 text-sm">
+                      <ErrorMessage name="name" />
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="text-gray-700 text-lg font-bold mb-2">
+                      Destination:
+                    </label>
+                    <Field
+                      type="text"
+                      name="place"
+                      className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                      placeholder="Enter the location"
+                    />
+                    <span className="text-red-500 text-sm">
+                      <ErrorMessage name="place" />
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="text-gray-700 text-lg font-bold mb-2">
+                      Type:
+                    </label>
+                    <Field
+                      as="select"
+                      name="stayType"
+                      className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                    >
+                      <option value="" label="Select stay type" />
+                      {StayTypes.map((type, index) => (
+                        <option key={index} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </Field>
+                    <span className="text-red-500 text-sm">
+                      <ErrorMessage name="stayType" />
+                    </span>
+                  </div>
+
+                  <div className="col-span-2 bg-blue-gray-50 py-5 rounded-lg">
+                    <p className="px-5 text-xl">Address</p>
+                    <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2 px-10">
+                      <div>
+                        <label className="text-gray-700 text-lg font-bold mb-2">
+                          Street Address:
+                        </label>
+                        <Field
+                          type="text"
+                          name="address.streetAddress"
+                          className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                          placeholder="Street Address"
+                        />
+                        <span className="text-red-500 text-sm">
+                          <ErrorMessage name="address.streetAddress" />
+                        </span>
+                      </div>
+
+                      <div>
+                        <label className="text-gray-700 text-lg font-bold mb-2">
+                          Landmark:
+                        </label>
+                        <Field
+                          type="text"
+                          name="address.landMark"
+                          className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                          placeholder="Landmark"
+                        />
+                        <span className="text-red-500 text-sm">
+                          <ErrorMessage name="address.landMark" />
+                        </span>
+                      </div>
+
+                      <div>
+                        <label className="text-gray-700 text-lg font-bold mb-2">
+                          District:
+                        </label>
+                        <Field
+                          type="text"
+                          name="address.district"
+                          className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                          placeholder="District"
+                        />
+                        <span className="text-red-500 text-sm">
+                          <ErrorMessage name="address.district" />
+                        </span>
+                      </div>
+
+                      <div>
+                        <label className="text-gray-700 text-lg font-bold mb-2">
+                          City:
+                        </label>
+                        <Field
+                          type="text"
+                          name="address.city"
+                          className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                          placeholder="City"
+                        />
+                        <span className="text-red-500 text-sm">
+                          <ErrorMessage name="address.city" />
+                        </span>
+                      </div>
+
+                      <div>
+                        <label className="text-gray-700 text-lg font-bold mb-2">
+                          Pincode:
+                        </label>
+                        <Field
+                          type="text"
+                          name="address.pincode"
+                          className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                          placeholder="Pincode"
+                        />
+                        <span className="text-red-500 text-sm">
+                          <ErrorMessage name="address.pincode" />
+                        </span>
+                      </div>
+
+                      <div>
+                        <label className="text-gray-700 text-lg font-bold mb-2">
+                          Country:
+                        </label>
+                        <Field
+                          type="text"
+                          name="address.country"
+                          className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                          placeholder="Country"
+                        />
+                        <span className="text-red-500 text-sm">
+                          <ErrorMessage name="address.country" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="col-span-2">
+                    <label className="text-gray-700 text-lg font-bold mb-2">
+                      Description:
+                    </label>
+                    <Field
+                      as="textarea"
+                      name="description"
+                      rows={5}
+                      className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                      placeholder="Description"
+                    />
+                    <span className="text-red-500 text-sm">
+                      <ErrorMessage name="description" />
+                    </span>
+                  </div>
+
+                  <div className="col-span-2">
+                    <label className="text-gray-700 text-lg font-bold mb-2">
+                      Amenities:
+                    </label>
+                    <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {amenitiesList.map((amenity, index) => (
+                        <label
+                          key={index}
+                          className="flex items-center text-gray-700"
+                        >
+                          <Field
+                            type="checkbox"
+                            name="amenities"
+                            value={amenity}
+                            checked={values.amenities.includes(amenity)}
+                            className="form-checkbox h-5 w-5 text-blue-600"
+                          />
+                          <span className="ml-2">{amenity}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <span className="text-red-500 text-sm">
+                      <ErrorMessage name="amenities" />
+                    </span>
+                  </div>
+
+                  <div className="col-span-2">
+                    <label className="text-gray-700 text-lg font-bold mb-2">
+                      Property Rules:
+                    </label>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      {propertyRules.map((rule, index) => (
+                        <div key={index} className="flex items-center">
+                          <p className="text-gray-700">{rule}</p>
+                          <button
+                            type="button"
+                            onClick={() => removePropertyRule(index)}
+                            className="ml-2 text-red-500 hover:text-red-700 focus:outline-none"
+                          >
+                            <FaTrashAlt />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex items-center mt-2">
+                      <input
+                        type="text"
+                        value={newRule}
+                        onChange={(e) => setNewRule(e.target.value)}
+                        placeholder="Add new rule"
+                        className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none focus:ring"
+                      />
+
+                      <div className="px-2 pt-2">
+                        {" "}
+                        <OutlinedButton
+                          onclick={addPropertyRule}
+                          color={"black"}
+                          text={"Add"}
+                        />
+                      </div>
+                    </div>
+                    <span className="text-red-500 text-sm">
+                      <ErrorMessage name="propertyRules" />
+                    </span>
+                  </div>
+
+                  <div className="col-span-6 sm:col-span-3">
+                    <label
+                      htmlFor="Location"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Location
+                    </label>
+                    <div className="mt-1">
+                      <AutoCompleteInput
+                        setFormData={setcoordinates}
+                        searchLocation={coordinates.searchLocation}
+                      />
+                      {/* {error?.searchLocation && (
+                      <p className="text-red-500">{error?.searchLocation}</p>
+                    )} */}
+                    </div>
+                  </div>
+
+                  <label className="text-gray-700 text-lg font-bold mb-2">
+                    Add Hotel images:
+                  </label>
+                  <div className="col-span-2">
+                    <div className="flex items-center">
+                      <button
+                        type="button"
+                        onClick={() => setIsModalOpen(true)}
+                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+                      >
+                        Upload Photos
+                      </button>
+                      <UploadButton
+                        text={"Upload Photos"}
+                        onclick={() => setIsModalOpen(true)}
+                      />
+                      <p className="ml-4 text-gray-700">
+                        {images.length}{" "}
+                        {images.length === 1 ? "image" : "images"} uploaded
+                      </p>
+                    </div>
+                    <div className="flex items-center mt-2">
+                      {images.map((image, index) => (
+                        <div key={index} className="relative mr-2">
+                          <img
+                            src={image || "/hotel.jpg"}
+                            alt="hotel"
+                            className="w-32 h-20 object-cover rounded-md"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(image || "")}
+                            className="absolute top-1 right-1 bg-white rounded-full p-1 hover:bg-gray-200"
+                          >
+                            <FaTrashAlt className="text-red-500" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <span className="text-red-500 text-sm">
+                      <ErrorMessage name="images" />
+                    </span>
+                  </div>
+
+                  <div className="col-span-2">
+                    <label className="text-gray-700 text-lg font-bold mb-2">
+                      Hotel Document:
+                    </label>
+                    <div className="flex flex-wrap gap-4">
+                      {hotelDocument.map((doc, index) => (
+                        <div key={index} className="relative">
+                          {typeof doc === "string" && doc.endsWith(".pdf") ? (
+                            <embed
+                              src={doc}
+                              type="application/pdf"
+                              className="h-40 w-full object-cover rounded-md"
+                            />
+                          ) : (
+                            <img
+                              src={doc as string}
+                              alt="Hotel"
+                              className="h-40 w-full object-cover rounded-md"
+                            />
+                          )}
+                          <button
+                            title="btn"
+                            className="absolute top-2 right-2 bg-white p-1 rounded-full text-red-500"
+                            onClick={() => handleRemoveHotelDocument()}
+                          >
+                            <FaTrashAlt />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsHotelModalOpen(true)}
+                      className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                    >
+                      Hotel Document
+                    </button>
+                    <span className="text-Strawberry_red text-sm">
+                      <ErrorMessage name="hotelDocument" />
+                    </span>
+                  </div>
+
+                  {hotelData?.status === "rejected" ? (
+                    <div>
+                      <div className="flex justify-center space-x-">
+                        <br></br>
+                        <button
+                          type="button"
+                          className="mt-4 bg-green-600 text-white px-4 py-2 rounded-md "
+                          onClick={handleReapply}
+                        >
+                          Save and Reapply
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="col-span-2 mt-6">
+                      <button
+                        type="submit"
+                        className={`w-full px-6 py-3 rounded-md text-white font-semibold focus:outline-none ${
+                          dirty
+                            ? "bg-blue-500 hover:bg-blue-600"
+                            : "bg-gray-300 cursor-not-allowed"
+                        }`}
+                        disabled={!dirty}
+                      >
+                        Save Changes
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </Form>
+            </div>
+          </div>
+        )}
+      </Formik>
+
+      {isModalOpen && (
+        <PhotoUploadModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onUpload={handleUpload}
+          file={"5"}
+        />
+      )}
+
+      {isHotelModalOpen && (
+        <PhotoUploadModal
+          isOpen={isHotelModalOpen}
+          onClose={() => setIsHotelModalOpen(false)}
+          onUpload={handleHotelDocumentUpload}
+          file={"2"}
+          isHotelDocumentUpload={true}
+        />
+      )}
+    </>
+  );
+};
 
 export default EditHotelForm;

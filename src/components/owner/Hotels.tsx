@@ -3,11 +3,12 @@ import useHotelList from "../../hooks/owner/UseHotelList";
 import { Button } from "flowbite-react";
 import { HotelInterface } from "../../types/hotelInterface";
 import { useNavigate } from "react-router";
-import { FaEdit } from "react-icons/fa";
 import axiosJWT from "../../utils/axiosService";
 import { OWNER_API } from "../../constants";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import showToast from "../../utils/toast";
+import { FaEdit, FaRedo } from "react-icons/fa";
 
 interface HotelDataProps {
   _id: string;
@@ -16,6 +17,7 @@ interface HotelDataProps {
   place: string;
   isBlocked: boolean;
   status: string;
+  rejectedReason?: string;
   handleClick: (id: string) => void;
 }
 
@@ -26,6 +28,7 @@ const HotelData: React.FC<HotelDataProps> = ({
   place,
   isBlocked,
   status,
+  rejectedReason,
   handleClick,
 }) => {
   const navigate = useNavigate();
@@ -67,50 +70,54 @@ const HotelData: React.FC<HotelDataProps> = ({
     <>
       <div className="flex items-center p-6 bg-white border border-gray-600 rounded-lg shadow-lg my-3 max-w-3xl mx-auto hover:shadow-xl transition-shadow duration-300 ease-in-out">
         <img
-          className="w-20 h-20 object-cover rounded-full mr-4"
+          className="w-24 h-24 object-cover rounded-full mr-6"
           src={image}
           alt={name}
         />
-        <div className="flex-grow">
-          <h5 className="text-xl font-semibold text-gray-800">{name}</h5>
-          <p className="text-gray-600">{place}</p>
-          <p className={`text-lg font-medium ${getStatusColor(status)}`}>
-            {status}
-          </p>
-        </div>
-        <div className="flex-grow flex flex-col items-center">
-          <button
-            onClick={toggleConfirmDialog}
-            className={`px-3 py-1 rounded-md focus:outline-none ${
-              isChecked
-                ? "bg-red-600 hover:bg-red-700"
-                : "bg-green-600 hover:bg-green-700"
-            } text-white transition-colors duration-300`}
-          >
-            {isChecked ? "Blocked" : "Block"}
-          </button>
-        </div>
-        <div className="ml-auto">
-          <Button
-            onClick={() => handleClick(_id)}
-            outline
-            gradientDuoTone="purpleToBlue"
-          >
-            <FaEdit className="w-5 h-5 mr-2" /> View/Edit
-          </Button>
+        <div className="flex-grow flex flex-col justify-between">
+          <div>
+            <h5 className="text-2xl font-semibold text-gray-800">{name}</h5>
+            <p className="text-gray-600 text-lg">{place}</p>
+            <p className={`text-lg font-medium mt-1 ${getStatusColor(status)}`}>
+              {status}
+            </p>
+            {status === "rejected" && rejectedReason && (
+              <p className="text-red-600 font-semibold mt-2">Reason: {rejectedReason}</p>
+            )}
+          </div>
+          <div className="flex justify-between items-center mt-4">
+            <button
+              onClick={toggleConfirmDialog}
+              className={`px-4 py-2 rounded-md focus:outline-none ${
+                isChecked
+                  ? "bg-red-600 hover:bg-red-700"
+                  : "bg-green-600 hover:bg-green-700"
+              } text-white transition-colors duration-300`}
+            >
+              {isChecked ? "Blocked" : "Block"}
+            </button>
+            <Button
+              onClick={() => handleClick(_id)}
+              outline
+              gradientDuoTone={status === "rejected" ? "redToPink" : "purpleToBlue"}
+              className={`text-white ${status === "rejected" ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"} transition-colors duration-300`}
+            >
+              {status === "rejected" ? <><FaRedo className="w-5 h-5 mr-2" /> Reapply</> : <><FaEdit className="w-5 h-5 mr-2" /> View/Edit</>}
+            </Button>
+          </div>
         </div>
         <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        toastClassName="Toastify__toast-container--center"
-      />
+          position="top-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          toastClassName="Toastify__toast-container--center"
+        />
       </div>
       {showConfirm && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -144,7 +151,7 @@ const Hotels: React.FC = () => {
   const navigate = useNavigate();
 
   const handleClick = (id: string) => {
-    navigate(`/owner/hotelDetails/${id}`);
+    navigate(`/owner/editHotel/${id}`);
   };
 
   if (error) {
@@ -153,6 +160,7 @@ const Hotels: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
+      <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">Your Hotels</h1>
       {hotels.length > 0 ? (
         hotels.map((hotel) => (
           <HotelData
@@ -163,6 +171,7 @@ const Hotels: React.FC = () => {
             place={hotel.place}
             isBlocked={hotel.isBlocked}
             status={hotel.status}
+            rejectedReason={hotel.rejectedReason}
             handleClick={handleClick}
           />
         ))

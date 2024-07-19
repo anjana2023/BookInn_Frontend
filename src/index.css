@@ -1,5 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Jersey+15&display=swap');
+/* @import 'react-pdf/dist/esm/Page/AnnotationLayer.css'; */
 
 /* tailwind configuration */
 @tailwind base;
@@ -31,3 +32,22 @@
   animation: moveLeftRight 2s infinite;
 }
 
+/* In your styles.css or a corresponding CSS module */
+.animated-text {
+  animation: textAnimation 3s ease-in-out infinite;
+}
+
+@keyframes textAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}

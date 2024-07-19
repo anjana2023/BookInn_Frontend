@@ -33,15 +33,14 @@ const LoginForm: React.FC = () => {
             console.log(data);
             console.log(data);
 
-            const access_token = data.accessToken;
-            console.log(access_token);
-         
+            const { message, access_token, refresh_token } = data;
+           
             const { name, role, _id } = data.owner;
             console.log(name);
             console.log(role);
             console.log(_id);
-
-            localStorage.setItem("access_token", access_token);
+            setItemToLocalStorage('access_token', access_token); 
+            setItemToLocalStorage("refresh_token",refresh_token)
             showToast(data.message, "success");
             dispatch(setOwner({ isAuthenticated: true, name, role, id: _id }));
             navigate("/owner");
@@ -67,9 +66,10 @@ const LoginForm: React.FC = () => {
         axios
           .post(OWNER_API + "/auth/googleSignIn", { owner: ownerData })
           .then(({ data }) => {
-            const { message, accessToken } = data;
+            const { message, user,access_token, refresh_token } = data;
             const { name, role, _id } = data.owner;
-            setItemToLocalStorage("access_token", accessToken);
+            setItemToLocalStorage('access_token', access_token); 
+        setItemToLocalStorage("refresh_token",refresh_token)
             showToast(message, "success");
             dispatch(setOwner({ isAuthenticated: true, name, role, id: _id }));
             navigate("/owner");

@@ -23,12 +23,12 @@ const LoginForm: React.FC = () => {
         axios
           .post(ADMIN_API + "/login", { email, password })
           .then(({ data }) => {
-            const access_token = data.accessToken;
+            const { message, access_token, refresh_token } = data;
             const { name, role } = data.admin;
             console.log(access_token);
             console.log(name, role);
-
-            setItemToLocalStorage("access_token", access_token);
+            setItemToLocalStorage('access_token', access_token); 
+            setItemToLocalStorage("refresh_token",refresh_token)
             showToast(data.message, "success");
             dispatch(setUser({ isAuthenticated: true, name, role }));
             navigate("/admin");

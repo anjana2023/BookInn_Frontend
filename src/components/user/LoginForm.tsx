@@ -8,14 +8,16 @@ import { useAppDispatch } from "../../redux/store/store";
 import { LoginValidation } from "../../utils/validation";
 import { USER_API } from "../../constants";
 import { setUser } from "../../redux/slices/userSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useSearchParams } from "react-router-dom";
 import showToast from "../../utils/toast";
+import { jwtDecode } from "jwt-decode";
 import { setItemToLocalStorage } from "../../utils/localStorage";
 import mal3 from "../../../src/assets/images/mal3.jpg";
 
 const LoginForm: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const { values, touched, handleBlur, handleChange, errors, handleSubmit } =
     useFormik({
       initialValues: {
@@ -27,13 +29,16 @@ const LoginForm: React.FC = () => {
         axios
           .post(USER_API + "/auth/login", { email, password })
           .then(({ data }) => {
-            const access_token = data.accessToken;
+            const{message, access_token, refresh_token }= data;
             const { name, role, _id } = data.user;
             console.log(data);
-            localStorage.setItem("access_token", access_token);
+            setItemToLocalStorage('access_token', access_token); 
+          setItemToLocalStorage("refresh_token",refresh_token)
             showToast(data.message, "success");
             dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
-            navigate("/");
+            const redirection = params.get("redirectPath");
+            if (redirection) navigate(-1);
+            else navigate("/");
           })
           .catch(({ response }) => {
             console.log(response);
@@ -53,11 +58,11 @@ const LoginForm: React.FC = () => {
       axios
         .post(USER_API + "/auth/googleSignIn", userData)
         .then(({ data }) => {
-          const { message, accessToken } = data;
+          const { message, access_token,refresh_token } = data;
           const { name, role, _id } = data.user;
           console.log(userData);
-
-          setItemToLocalStorage("access_token", accessToken);
+          setItemToLocalStorage('access_token', access_token); 
+          setItemToLocalStorage("refresh_token",refresh_token)
           showToast(message, "success");
           dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
           navigate("/");

@@ -9,11 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const Owners: React.FC = () => {
   const { owners } = useOwners();
-  console.log(owners)
-  console.log(owners)
-  console.log(owners)
-  console.log(owners)
-
+ 
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 10;
 
@@ -48,15 +44,15 @@ const Owners: React.FC = () => {
             <table className="table-auto w-full">
               <thead>
                 <tr className="bg-gray-200">
-                  <th className="px-6 py-3 text-left">ID</th>
+                <th className="px-6 py-3 text-left">S.No</th>
                   <th className="px-6 py-3 text-left">Name</th>
                   <th className="px-6 py-3 text-left">Email</th>
                   <th className="px-6 py-3 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {currentUsers.map((owner) => (
-                  <UserData {...owner} key={owner._id} />
+                {currentUsers.map((owner,index) => (
+                  <UserData {...owner} key={owner._id}  serialNo={indexOfFirstUser + index + 1} />
                 ))}
               </tbody>
             </table>

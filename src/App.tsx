@@ -8,11 +8,12 @@ import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
 import React from 'react'
 import { MainRouter } from './routes'
+import SocketProvider from './redux/Context/SocketContext'
 
 
 function App() {
     return (
-      <>
+      <SocketProvider>
         <Provider store={store}>
           <PersistGate persistor={persistor}>
             <GoogleOAuthProvider clientId="795475586008-7gksni89s7ohmd400mbb2a57cn00knfh.apps.googleusercontent.com">
@@ -23,7 +24,7 @@ function App() {
             <Toaster />
           </PersistGate>
         </Provider>
-      </>
+        </SocketProvider>
     );
   }
   

@@ -1,100 +1,226 @@
-import React from "react";
-import { useParams } from "react-router-dom";
-import { useAppSelector } from "../../redux/store/store";
+import useSWR, { mutate } from "swr";
+import CancelBookingModal from "../../pages/user/cancelBookingModal";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { CHAT_API, USER_API } from "../../constants";
 import showToast from "../../utils/toast";
+import React from "react";
+import { BookingInterface, BookingResponse } from "../../types/hotelInterface";
+import { fetcher } from "../../utils/fetcher";
+import axiosJWT from "../../utils/axiosService";
+import { useAppSelector } from "../../redux/store/store";
+import { MessageCircleMore } from "lucide-react";
+import { BsChatDots } from "react-icons/bs";
+import axios from "axios";
+// ... other imports
 
-const formatDate = (dateString:any) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-GB", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-};
+const BookingDetails = () => {
+  const [booking, setBooking] = useState<BookingInterface | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { id } = useParams<{ id: string }>();
+  const user = useAppSelector((state) => state.userSlice);
+  const navigate = useNavigate();
+  const [showTooltip, setTooltip] = useState<boolean>(false);
+  const { data, error } = useSWR<BookingResponse>(
+    `${USER_API}/bookingdetails/${id}`,
+    fetcher
+  );
 
-const ViewBooking = () => {
-  const { id } = useParams();
-  
-  // Fetch booking details from the Redux store
-  const {
-    checkIn,
-    checkOut,
-    price,
-    guests,
-    name,
-    place,
-    image,
-    city,
-    district,
-    pincode,
-    country,
-    days,
-    hotelId,
-  } = useAppSelector((state) => state.bookingSlice);
+  useEffect(() => {
+    if (data) {
+      console.log("Fetched Data$$$$$$$$$$$$$$$$$$$$$:", data); // Check the structure of data
+      setBooking(data.data); // Ensure data.data contains booking details
+    }
+  }, [data]);
 
-  // Format dates
-  const formattedCheckInDate = formatDate(checkIn);
-  const formattedCheckOutDate = formatDate(checkOut);
+  useEffect(() => {
+  }, [booking]);
 
-  if (!id) {
-    showToast("Invalid booking ID", "error");
-    return <div>Invalid booking ID</div>;
+  if (error) {
+    console.error("Error fetching booking:", error);
+    return <div>Error fetching booking details.</div>;
   }
 
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+
+  const handleChat = () => {
+    axios
+      .post(CHAT_API + `/conversations`, {
+        senderId: user.id,
+        recieverId: booking?.hotelId
+      })
+      .then(({}) => {
+        navigate("/user/chat");
+      })
+      .catch(() => {
+        console.log("error in sending chat");
+      });
+  };
+
+  const handleCancellation = async (reason: string) => {
+    if (!booking) return;
+
+    try {
+      const response = await axiosJWT.patch(
+        `${USER_API}/booking/cancel/${booking.bookingId}`,
+        { reason, status: "cancelled" }
+      );
+
+      // Update the booking status locally
+      setBooking((prevBooking) => ({
+        ...prevBooking!,
+        status: response.data.booking.status ?? prevBooking?.status,
+      }));
+
+      // Refetch booking details to ensure the updated data is displayed
+      mutate(`${USER_API}/bookingdetails/${id}`);
+
+      showToast("Booking cancelled successfully", "success");
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      showToast("Oops! Something went wrong", "error");
+    }
+  };
+
+  console.log("Booking State.............................:", booking); // Check the booking state after update
+
+  const canCancelBooking = booking && booking.paymentStatus !== "Refunded" && (booking.status === "pending" || booking.status === "booked");
+
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center py-8">
-      <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-4xl">
-        <div className="text-center mb-8">
-         
-          <div className="bg-green-100 text-green-600 inline-block rounded-full p-4 mb-4">
-            <svg className="w-6 h-6 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-          </div>
-          <p className="text-lg text-gray-700">Hotel {name}</p>
-          <p className="text-gray-500">Check-in: {formattedCheckInDate} - Check-out: {formattedCheckOutDate}</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="border p-4 rounded-lg bg-gray-50">
-            <img
-              src={image}
-              alt={name}
-              className="w-full h-auto object-cover rounded-lg mb-4"
-            />
-            <h2 className="text-2xl font-bold mb-2">{name}</h2>
-            <p className="text-gray-700">{place}</p>
-            <p className="text-gray-500">{city}, {district}, {pincode}, {country}</p>
-          </div>
-          <div className="border p-4 rounded-lg bg-gray-50">
-            <h2 className="text-2xl font-bold mb-4">Your Booking Details</h2>
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <p className="text-gray-700">
-                  <span className="font-semibold">Check-in:</span> {formattedCheckInDate}
-                </p>
-                <p className="text-gray-700">
-                  <span className="font-semibold">Check-out:</span> {formattedCheckOutDate}
-                </p>
-                <p className="text-gray-700">
-                  <span className="font-semibold">Total length of stay:</span> {days} night(s)
-                </p>
-                <p className="text-gray-700">
-                  <span className="font-semibold">No. of Guests:</span> {guests} guest(s)
-                </p>
+    <div className="w-screen h-fit overflow-hidden flex justify-center">
+      <div className="bg-varWhite min-h-screen p-4">
+        <div className="mx-auto bg-white shadow-lg rounded-lg p-6">
+          <h1 className="text-2xl text-center font-semibold mb-4">
+            Booking Details
+          </h1>
+          {booking && (
+            <div className="mb-6 grid grid-cols-2 gap-4">
+              <div className="items-center rounded-lg mb-4">
+                <div className="border rounded-lg p-4">
+                  <h2 className="text-lg font-medium mb-2">
+                    BOOKING ID : {booking.bookingId}
+                  </h2>
+                  <p className="text-base text-green-500 mb-2">
+                    Booking Status: {booking.status}
+                  </p>
+                  <p className="text-base text-red-500 mb-2">
+                    Payment Method: {booking.paymentMethod}
+                  </p>
+
+                  <div className="flex justify-between">
+                    <div>
+                      <p className="text-xl font-bold text-gray-600 mb-1">
+                        Check-in-Date
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {new Date(booking.checkInDate).toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xl font-bold text-gray-600 mb-1">
+                        Check-out-Date
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {new Date(booking.checkOutDate).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="border rounded-lg p-4 my-3">
+                  <h2 className="text-lg font-medium mb-2">User Details</h2>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <p>
+                      Name: {booking.firstName} {booking.lastName}
+                    </p>
+                    <p>Email: {booking.email}</p>
+                    <p>Phone: {booking.phoneNumber}</p>
+                  </div>
+                </div>
+                <div className="border rounded-lg p-4 my-3">
+                  <h2 className="text-lg font-medium mb-2">Stay Address</h2>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <p>Street: {booking.hotelId.address.streetAddress}</p>
+                    <p>City: {booking.hotelId.address.city}</p>
+                    <p>LandMark: {booking.hotelId.address.landMark}</p>
+                    <p>District: {booking.hotelId.address.district}</p>
+                    <p>Pincode: {booking.hotelId.address.pincode}</p>
+                    <p>Country: {booking.hotelId.address.country}</p>
+                  </div>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-xl font-small text-blue-500">
-                  Total Amount: ₹ {price}
-                </p>
+
+              <div>
+                <div className="p-5 text-black rounded-lg">
+                  <img
+                    alt="image"
+                    src={booking?.hotelId?.imageUrls[0]}
+                    className="p-3 h-64 w-full"
+                  />
+                  <h2 className="px-3 text-xl text-right font-medium mb-2">
+                    {booking.hotelId.name}
+                  </h2>
+                  <h2 className="px-3 text-base text-right font-medium mb-2">
+                    {booking.hotelId.place}
+                  </h2>
+                </div>
+
+                {/* Enhanced Chat Button */}
+                <div className="flex justify-center my-4 bg">
+                  <button
+                    onClick={handleChat}
+                    className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden  text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-blue-400 to-purple-600 group-hover:from-blue-400 group-hover:to-purple-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-orange-400 dark:focus:ring-blue-800"
+                  >
+                    <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white  bg-orange-400 dark:bg-gray-900 rounded-md group-hover:bg-opacity-0 flex items-center">
+                      <BsChatDots className="w-5 h-5 mr-2" />
+                      Chat with Hotel
+                    </span>
+                  </button>
+                </div>
+
+                <div className="border rounded-lg p-4 my-3">
+                  <h2 className="text-lg font-medium mb-2">Property Rules</h2>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    {booking.hotelId.propertyRules.map((rule, index) => (
+                      <p key={index}>{rule}</p>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
+          )}
+          <div className={`flex justify-${canCancelBooking ? "between" : "center"} mx-40`}>
+            <button
+              onClick={() => navigate(-1)}
+              className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"
+            >
+              <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                Go Back
+              </span>
+            </button>
+            {canCancelBooking && (
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-red-400 to-pink-600 group-hover:from-red-400 group-hover:to-pink-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-red-200 dark:focus:ring-red-800"
+              >
+                <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
+                  Cancel Booking
+                </span>
+              </button>
+            )}
+            {isModalOpen && (
+              <CancelBookingModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleCancellation}
+              />
+            )}
           </div>
-        </div>
-        <div className="text-center mt-8">
-          <p className="text-gray-700">Your trip starts Friday, {formattedCheckInDate}</p>
         </div>
       </div>
     </div>
   );
 };
 
-export default ViewBooking;
+export default BookingDetails;

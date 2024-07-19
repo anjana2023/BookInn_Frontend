@@ -6,7 +6,13 @@ import React from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const UserData: React.FC<UserInterface> = ({ _id, name, email, isBlocked }) => {
+
+interface UserDataProps extends UserInterface {
+  serialNo: number;
+}
+
+
+const UserData: React.FC<UserDataProps> = ({serialNo, _id, name, email, isBlocked }) => {
   const [isChecked, setIsChecked] = useState<boolean>(isBlocked);
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
@@ -32,9 +38,9 @@ const UserData: React.FC<UserInterface> = ({ _id, name, email, isBlocked }) => {
   return (
     <>
     <tr className="bg-white border-b hover:bg-gray-50">
-      <td className="px-6 py-4 text-left font-medium text-gray-900 whitespace-nowrap">
-        {_id}
-      </td>
+    <td className="px-6 py-4 text-left font-medium text-gray-900 whitespace-nowrap">
+          {serialNo}
+        </td>
       <td className="px-6 py-4 text-left">{name}</td>
       <td className="px-6 py-4 text-left">{email}</td>
       <td className="px-6 py-4 text-left">

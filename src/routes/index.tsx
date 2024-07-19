@@ -10,26 +10,42 @@ import React from "react";
 import AddHotel from "../pages/owner/AddHotel";
 import HotelDetails from "../pages/user/HotelDetails";
 import OwnerHotels from "../pages/owner/ownerHotels";
+import EditHotel from "../pages/owner/EditHotel";
 
 
 const Register = lazy(() => import("../pages/user/Register"));
 const Login = lazy(() => import("../pages/user/Login"));
 const VerifyOtp = lazy(() => import("../pages/user/verifyOt"));
 const Home = lazy(() => import("../pages/Home"));
+const HotelCards=lazy(()=>import("../pages/user/Hotels"))
 const Forgotpassword = lazy(() => import("../pages/user/ForgotPassword"));
 const ResetPassword = lazy(() => import("../pages/user/ResetPassword"));
 const UserProfile = lazy(() => import("../pages/user/Profile"));
+const AboutUs =lazy(()=>import('../pages/user/Aboutus'))
+const About =lazy(()=>import('../pages/owner/About'))
+const ContactSection=lazy(()=>import('../pages/user/ContanctUs'))
+
 const CheckoutPage= lazy(()=>import("../pages/user/checkout"))
 const PaymentCompleted = lazy(() => import("../components/user/paymentCompleted"));
 const BookingDetails= lazy(()=>import ("../pages/user/BookingDetail"))
+const BookingDetail= lazy(()=>import ("../pages/owner/BookingDetails"))
+const Contact=lazy(()=>import('../pages/owner/contact'))
+
+
 const BookingList = lazy(()=>import("../pages/user/Bookings"))
+const Wallets = lazy(()=>import("../pages/user/wallet"));
+const Chat = lazy(() => import("../pages/user/chat"));
+const Transaction = lazy(()=>import("../pages/user/walletTransaction"));
+
 
 const OwnerRegister = lazy(() => import("../components/owner/ownerRegister"));
 const OwnerLogin = lazy(() => import("../components/owner/ownerLogin"));
 const OwnerVerifyOtp = lazy(() => import("../components/owner/ownerOtp"));
 const OwnerHome = lazy(() => import("../pages/owner/Home"));
 const OwnerHotelDetails=lazy(()=>import("../pages/owner/ownerHotelDetails"))
-
+const AddRoom =lazy(()=>import("../pages/owner/AddRoom"))
+const OwnerChat=lazy(()=>import("../pages/owner/chat"));
+const Bookings=lazy(()=>import("../pages/owner/Bookings"))
 
 const AdminLogin = lazy(() => import("../pages/admin/Login"));
 const AdminDashboard = lazy(() => import("../components/admin/DashBoard"));
@@ -48,6 +64,9 @@ export const MainRouter = () => {
       <Suspense fallback={<h1>Loading</h1>}>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/AboutUs" element={<AboutUs />} />
+          <Route path="/user/contact" element={<ContactSection />} />
+          <Route path="/user/hotelDetails/:id" element={<HotelDetails />} />
           <Route path="" element={<PublicRoutes />}>
             <Route path="/user/auth/register" element={<Register />} />
             <Route path="/user/auth/login" element={<Login />} />
@@ -64,30 +83,37 @@ export const MainRouter = () => {
 
           <Route path="/" element={<ProtectedUserRoute />}>
             <Route path="/" element={<Home />} /> 
-            <Route path="/user/hotelDetails/:id" element={<HotelDetails />} />
+            <Route path="/user/hotels" element={<HotelCards />} />
             <Route path="/user/checkout/:id" element={<CheckoutPage />} />
+            <Route path="/user/chat" element={<Chat />} />
             <Route path="/payment_status/:id" element={<PaymentCompleted />} />
             <Route path ="/user/bookings" element={<BookingList/>}/>
+            <Route path="/user/wallet" element={<Wallets/>}/>
+            <Route path="/user/walletHistory" element={<Transaction/>}/>
             <Route path="/bookingdetails/:id" element={<BookingDetails/>} />
             <Route path="/user/profile" element={<UserProfile />} />
           </Route>
 
 
-          BookingDetails
-
-
           <Route path="/owner" element={<OwnerHome />} />
+          <Route path="/owner/contact" element={<Contact />} />
+          <Route path="/owner/AboutUs" element={<About />} />
           <Route path="" element={<PublicOwnerRoutes />}>
             <Route path="/owner/auth/register" element={<OwnerRegister />} />
             <Route path="/owner/auth/login" element={<OwnerLogin />} />
             <Route path="/owner/auth/verifyOtp" element={<OwnerVerifyOtp />} />
           </Route>
-
+       
           <Route path="" element={<ProtectedOwnerRoute />}>
             <Route path="/owner" element={<OwnerHome />} />
             <Route path="/owner/addhotel" element={<AddHotel />} />
+            <Route path="/owner/addRoom" element={<AddRoom/>} />
+            <Route path="/owner/bookings" element={<Bookings />} />
             <Route path="/owner/hotels" element={<OwnerHotels />} />
             <Route path="/owner/hotelDetails/:id" element={<OwnerHotelDetails />} />
+            <Route path="/owner/bookingdetails/:id" element={<BookingDetail />} />
+            <Route path="/owner/chat" element={<OwnerChat/>}/>
+            <Route path="/owner/editHotel/:id" element={<EditHotel/>} key={document.location.href}/>
             <Route path="/owner/profile" element={<OwnerProfile />} />
           </Route>
 

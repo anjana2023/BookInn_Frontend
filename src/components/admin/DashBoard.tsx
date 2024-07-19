@@ -19,7 +19,7 @@ const Dashboard: React.FC = () => {
               <h2 className="text-lg font-bold mb-2">Owners Count</h2>
               <p className="text-3xl font-bold">500</p>
             </div>
-            {/* Card 3: Appointments Count */}
+            
             <div className="bg-white shadow-md rounded-lg p-6">
               <h2 className="text-lg font-bold mb-2">Total Booking Today</h2>
               <p className="text-3xl font-bold">350</p>

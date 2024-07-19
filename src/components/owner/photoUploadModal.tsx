@@ -9,8 +9,9 @@ import React from "react"
 type PhotoUploadModalProps = {
   isOpen: boolean
   onClose: () => void
-  onUpload: (imageUrls: string[]) => void
+  onUpload: (fileUrls: string[]) => void
   file: string
+  isHotelDocumentUpload?: boolean
 }
 type PreviewFile = File & {
   preview: string
@@ -21,6 +22,7 @@ const PhotoUploadModal = ({
   onClose,
   onUpload,
   file,
+  isHotelDocumentUpload = false, 
 }: PhotoUploadModalProps) => {
   const [selectedFiles, setSelectedFiles] = useState<PreviewFile[]>([])
   const [loading, setLoading] = useState(false)
@@ -29,31 +31,38 @@ const PhotoUploadModal = ({
   useEffect(() => {
     setSelectedFiles([])
   }, [isOpen])
+
   const onDrop = useCallback(
     (
       acceptedFiles: File[],
       fileRejections: FileRejection[],
       event: DropEvent
     ) => {
-      console.log(selectedFiles)
+     
 
       if (selectedFiles.length + acceptedFiles.length > maxFiles) {
-        alert(`You can only upload up to ${maxFiles} images.`)
+        alert(`You can only upload up to ${maxFiles} files.`)
+        
         return
       }
-      const newFiles = acceptedFiles.map(file =>
+
+       const newFiles = acceptedFiles.map((file) =>
         Object.assign(file, {
-          preview: URL.createObjectURL(file),
+          preview: file.type.startsWith("image/")
+            ? URL.createObjectURL(file)
+            : file.type === "application/pdf"
+            ? URL.createObjectURL(file)
+            : "",
         })
-      )
-      setSelectedFiles(prevFiles => [...prevFiles, ...newFiles])
+      );
+      setSelectedFiles((prevFiles) => [...prevFiles, ...newFiles]);
     },
-    [selectedFiles]
+    [selectedFiles, maxFiles]
   )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/*": [] } as Accept,
+    accept: { "image/*": [], "application/pdf": [] } as Accept,
     maxSize: 10485760,
     multiple: maxFiles !== 1,
   })
@@ -65,22 +74,33 @@ const PhotoUploadModal = ({
   const handleUpload = async () => {
     if (selectedFiles) {
       setLoading(true)
-      const imageUrls = await uploadImagesToCloudinary(selectedFiles)
-      onUpload(imageUrls)
+      const fileUrls = await uploadImagesToCloudinary(selectedFiles)
+      onUpload(fileUrls)
       setLoading(false)
       onClose()
     }
   }
-  
+  console.log(selectedFiles,"..............pdfs an images")
+
   const renderPreviews = () => (
     <div className="grid grid-cols-2 gap-4 mt-4">
       {selectedFiles.map((file, index) => (
         <div key={index} className="relative">
-          <img
-            src={file.preview}
-            alt="Preview"
-            className="h-40 w-full object-cover rounded-md"
-          />
+          {file.type.startsWith("image/") ? (
+            <img
+              src={file.preview}
+              alt="Preview"
+              className="h-40 w-full object-cover rounded-md"
+            />
+          ) : (
+            <div className="h-40 w-full flex items-center justify-center bg-gray-200 rounded-md">
+              <embed
+                src={file.preview}
+                type="application/pdf"
+                className="h-40 w-full object-cover rounded-md"
+              />
+            </div>
+          )}
           <button
             title="button"
             className="absolute top-2 right-2 bg-white p-1 rounded-full text-red-500"
@@ -92,7 +112,6 @@ const PhotoUploadModal = ({
       ))}
     </div>
   )
-
   return (
     <Modal
       isOpen={isOpen}
@@ -117,7 +136,7 @@ const PhotoUploadModal = ({
       }}
     >
       <div className="bg-white p-6 rounded-lg shadow-lg w-full">
-        <h2 className="text-lg font-bold mb-2">Upload Photos</h2>
+        <h2 className="text-lg font-bold mb-2">Upload Files</h2>
         <div
           className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
           {...getRootProps()}
@@ -136,7 +155,11 @@ const PhotoUploadModal = ({
               </label>
             </div>
           )}
-          <p className="text-xs text-indigo-600">PNG, JPG, GIF up to 10MB</p>
+        {!isHotelDocumentUpload && (
+            <p className="text-xs text-red-600">
+              PNG, JPG, WEBP up to 10MB
+            </p>
+          )}:
         </div>
         {renderPreviews()}
         <div className="flex justify-end mt-4">

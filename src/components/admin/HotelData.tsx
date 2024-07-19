@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button } from 'flowbite-react';
 import useHotelList from '../../hooks/admin/useHotels';
 import { HotelInterface } from '../../types/hotelInterface';
 import ReactPaginate from 'react-paginate';
+import axiosJWT from '../../utils/axiosService';
+import toast from 'react-hot-toast';
+import { OWNER_API } from '../../constants';
 
 interface HotelDataProps {
   _id: string;
@@ -11,15 +14,38 @@ interface HotelDataProps {
   name: string;
   place: string;
   status: string;
+  isBlocked: boolean;
 }
 
-const HotelData: React.FC<HotelDataProps> = ({ image, name, place, _id, status }) => {
+const HotelData: React.FC<HotelDataProps> = ({ image, name, _id, status, isBlocked }) => {
   const navigate = useNavigate();
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
+  const [isChecked, setIsChecked] = useState<boolean>(isBlocked);
+
+  const handleCheckboxChange = () => {
+    setIsChecked(!isChecked);
+    axiosJWT
+      .patch(OWNER_API + `/block_hotel/${_id}`)
+      .then(() => {
+        toast.success(`Hotel ${!isChecked ? "blocked" : "unblocked"} successfully!`);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("An error occurred. Please try again.");
+      });
+    setShowConfirm(false);
+  };
+
+  const toggleConfirmDialog = () => {
+    setShowConfirm(!showConfirm);
+  };
+
   const handleClick = () => {
     navigate(`/admin/hotelDetails/${_id}`);
   };
 
   return (
+    <>
     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
       <td className="p-4">
         <img className="w-24 h-24 object-cover rounded" src={image} alt={name} />
@@ -31,12 +57,14 @@ const HotelData: React.FC<HotelDataProps> = ({ image, name, place, _id, status }
         <p className="text-gray-900 text-bold ">{status}</p>
       </td>
       <td className="px-6 py-4 text-left">
-        <Link
-          to={`/admin/hotels/${_id}/verification`}
-          className="bg-green-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded ml-10"
+        <button
+          onClick={toggleConfirmDialog}
+          className={`px-4 py-2 rounded-md focus:outline-none ${
+            isChecked ? "bg-red-500" : "bg-green-500"
+          } text-white`}
         >
-          Verify
-        </Link>
+          {isChecked ? "Blocked" : "Block"}
+        </button>
       </td>
       <td className="p-4 text-center">
         <Button onClick={handleClick} outline gradientDuoTone="purpleToBlue">
@@ -44,22 +72,46 @@ const HotelData: React.FC<HotelDataProps> = ({ image, name, place, _id, status }
         </Button>
       </td>
     </tr>
-  );
+     {showConfirm && (
+      <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="absolute inset-0 bg-black opacity-50"></div>
+        <div className="bg-white p-6 rounded-md shadow-md z-50">
+          <h1 className="text-xl font-bold mb-4">Confirm Action</h1>
+          <p className="mb-4">Are you sure you want to {isChecked ? "unblock" : "block"} this owner?</p>
+          <div className="flex justify-end space-x-4">
+            <button
+              onClick={handleCheckboxChange}
+              className="px-4 py-2 bg-green-500 text-white rounded-md"
+            >
+              Yes
+            </button>
+            <button
+              onClick={toggleConfirmDialog}
+              className="px-4 py-2 bg-gray-500 text-white rounded-md"
+            >
+              No
+            </button>
+          </div>
+        </div>
+      </div>
+  )};
+</>
+);
 };
 
 const Hotels: React.FC = () => {
   const { hotels, error } = useHotelList();
-  const approvedandNonBlockedHotels = hotels.filter((hotel) => hotel.isApproved&&!hotel.isBlocked);
+  const approvedHotels = hotels.filter((hotel) => hotel.isApproved);
 
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 4;
-  const totalPages = Math.ceil(approvedandNonBlockedHotels.length / itemsPerPage);
+  const totalPages = Math.ceil(approvedHotels.length / itemsPerPage);
 
   const handlePageClick = (selectedItem: { selected: number }) => {
     setCurrentPage(selectedItem.selected);
   };
 
-  const currentHotels = approvedandNonBlockedHotels.slice(
+  const currentHotels = approvedHotels.slice(
     currentPage * itemsPerPage,
     (currentPage + 1) * itemsPerPage
   );
@@ -70,7 +122,7 @@ const Hotels: React.FC = () => {
 
   return (
     <div className="h-screen w-full px-14 py-7 overflow-hidden">
-     <h1 className='text-2xl font-bold text-center mb-4 pb-3'>Verifed Hotels</h1>
+      <h1 className="text-2xl font-bold text-center mb-4 pb-3">Verified Hotels</h1>
       <div className="h-full overflow-hidden">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -85,11 +137,9 @@ const Hotels: React.FC = () => {
                 Status
               </th>
               <th scope="col" className="p-4 text-center">
-                Actions
+                Block/Unblock
               </th>
-              <th scope="col" className="p-4 text-center">
-                Details
-              </th>
+             
             </tr>
           </thead>
           <tbody>
@@ -102,6 +152,7 @@ const Hotels: React.FC = () => {
                   name={hotel.name}
                   place={hotel.place}
                   status={hotel.status}
+                  isBlocked={hotel.isBlocked}
                 />
               ))
             ) : (

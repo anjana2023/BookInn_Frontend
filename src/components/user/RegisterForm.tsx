@@ -5,7 +5,7 @@ import axios from "axios";
 import { RegisterValidation } from "../../utils/validation";
 import { USER_API } from "../../constants";
 import showToast from "../../utils/toast";
-import { setItemToLocalStorage } from "../../utils/localStorage";
+import { getItemFromLocalStorage, setItemToLocalStorage } from "../../utils/localStorage";
 import mal3 from "../../../src/assets/images/mal3.jpg";
 
 const RegisterForm = () => {
@@ -36,6 +36,7 @@ const RegisterForm = () => {
           showToast(data.message, "success");
           setTimeout(() => {
             setItemToLocalStorage("userId", newUser._id);
+            console.log('Stored userId:', getItemFromLocalStorage("userId"));
             navigate("/user/auth/verifyOtp");
           }, 1000);
         })

@@ -11,12 +11,17 @@ const PaymentCompleted = () => {
   const { id } = useParams();
 
   const status = searchParams.get("success");
+  console.log("......................",status)
   const isSuccess = status === "true" ? true : false;
-
+  
   if (status) {
     const paymentStatus = isSuccess ? "Paid" : "Failed";
+    console.log(paymentStatus)
     axiosJWT
-      .patch(`${USER_API} + /payment_status/${id}`, { paymentStatus })
+    .patch(
+      `${USER_API}/payment_status/${id}`,
+      { paymentStatus },
+    )
       .then(({ data }) => console.log(data))
       .catch((err: any) => console.log(err));
   }
