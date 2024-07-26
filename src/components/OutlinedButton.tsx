@@ -1,6 +1,5 @@
 import React from "react"
 import { Button } from "react-bootstrap"
-// import { Button } from "@material-tailwind/react"
 
 const OutlinedButton = ({ text, onclick, color }) => {
   const handleClick = () => {

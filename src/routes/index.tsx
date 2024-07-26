@@ -17,7 +17,7 @@ const Register = lazy(() => import("../pages/user/Register"));
 const Login = lazy(() => import("../pages/user/Login"));
 const VerifyOtp = lazy(() => import("../pages/user/verifyOt"));
 const Home = lazy(() => import("../pages/Home"));
-const HotelCards=lazy(()=>import("../pages/user/Hotels"))
+const HotelCards=lazy(()=>import("../pages/user/Hotell"))
 const Forgotpassword = lazy(() => import("../pages/user/ForgotPassword"));
 const ResetPassword = lazy(() => import("../pages/user/ResetPassword"));
 const UserProfile = lazy(() => import("../pages/user/Profile"));
@@ -30,6 +30,7 @@ const PaymentCompleted = lazy(() => import("../components/user/paymentCompleted"
 const BookingDetails= lazy(()=>import ("../pages/user/BookingDetail"))
 const BookingDetail= lazy(()=>import ("../pages/owner/BookingDetails"))
 const Contact=lazy(()=>import('../pages/owner/contact'))
+const NotFound=lazy(()=>import("../pages/404"))
 
 
 const BookingList = lazy(()=>import("../pages/user/Bookings"))
@@ -133,6 +134,7 @@ export const MainRouter = () => {
               <Route path="/admin/hotels/:id/verification" element={<VerificationHotel/>}/>
             </Route>
           </Route>
+          <Route path="*" element={<NotFound />}/>
         </Routes>
       </Suspense>
     </>

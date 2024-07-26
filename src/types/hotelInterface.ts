@@ -39,6 +39,7 @@ export type HotelInterface = {
     type: string;
     coordinates: [number, number];
   };
+  isVerified:string;
   stayType: string;
   propertyRules: string[];
   description: string;

@@ -37,16 +37,16 @@ const Chat: React.FC = () => {
             : conversation
         );
 
-        updatedConversations.sort(
-          (a, b) =>
-            new Date(b.lastMessage.createdAt).getTime() -
-            new Date(a.lastMessage.createdAt).getTime()
-        );
+        updatedConversations.sort((a, b) => {
+          const dateA = new Date(a.lastMessage.createdAt || 0).getTime();
+          const dateB = new Date(b.lastMessage.createdAt || 0).getTime();
+          return dateB - dateA;
+        });
 
         return updatedConversations;
       });
     });
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     if (arrivalMessage) {
@@ -60,11 +60,11 @@ const Chat: React.FC = () => {
             : conversation
         );
 
-        updatedConversations.sort(
-          (a, b) =>
-            new Date(b.lastMessage.createdAt).getTime() -
-            new Date(a.lastMessage.createdAt).getTime()
-        );
+        updatedConversations.sort((a, b) => {
+          const dateA = new Date(a.lastMessage.createdAt || 0).getTime();
+          const dateB = new Date(b.lastMessage.createdAt || 0).getTime();
+          return dateB - dateA;
+        });
 
         return updatedConversations;
       });
@@ -74,7 +74,7 @@ const Chat: React.FC = () => {
   useEffect(() => {
     socket?.emit("addUser", doctor.id);
     socket?.on("getUsers", () => {});
-  }, [doctor]);
+  }, [doctor, socket]);
 
   useEffect(() => {
     const getConversations = async () => {
@@ -90,16 +90,16 @@ const Chat: React.FC = () => {
               `${CHAT_API}/messages/${conversation._id}`
             );
             const messages = messagesResponse.data.messages;
-            const lastMessage = messages[messages.length - 1];
+            const lastMessage = messages[messages.length - 1] || {};
             return { ...conversation, lastMessage };
           })
         );
 
-        updatedConversations.sort(
-          (a, b) =>
-            new Date(b.lastMessage.createdAt).getTime() -
-            new Date(a.lastMessage.createdAt).getTime()
-        );
+        updatedConversations.sort((a, b) => {
+          const dateA = new Date(a.lastMessage.createdAt || 0).getTime();
+          const dateB = new Date(b.lastMessage.createdAt || 0).getTime();
+          return dateB - dateA;
+        });
 
         setConversations(updatedConversations);
       } catch (error) {
@@ -148,11 +148,11 @@ const Chat: React.FC = () => {
           : conv
       );
 
-      updatedConversations.sort(
-        (a, b) =>
-          new Date(b.lastMessage.createdAt).getTime() -
-          new Date(a.lastMessage.createdAt).getTime()
-      );
+      updatedConversations.sort((a, b) => {
+        const dateA = new Date(a.lastMessage.createdAt || 0).getTime();
+        const dateB = new Date(b.lastMessage.createdAt || 0).getTime();
+        return dateB - dateA;
+      });
 
       return updatedConversations;
     });
@@ -188,11 +188,11 @@ const Chat: React.FC = () => {
             : conversation
         );
 
-        updatedConversations.sort(
-          (a, b) =>
-            new Date(b.lastMessage.createdAt).getTime() -
-            new Date(a.lastMessage.createdAt).getTime()
-        );
+        updatedConversations.sort((a, b) => {
+          const dateA = new Date(a.lastMessage.createdAt || 0).getTime();
+          const dateB = new Date(b.lastMessage.createdAt || 0).getTime();
+          return dateB - dateA;
+        });
 
         return updatedConversations;
       });
@@ -212,7 +212,6 @@ const Chat: React.FC = () => {
         {/* Chat Menu */}
         <div className="w-full lg:w-1/4 bg-gray-200">
           <div className="p-4 h-full flex flex-col">
-
             {conversations.map((conversation, index) => (
               <div
                 key={index}
@@ -232,39 +231,39 @@ const Chat: React.FC = () => {
         <div className="w-full lg:w-3/4 bg-gray-100">
           <div className="flex flex-col h-full">
             <div className="h-full flex flex-col overflow-y-scroll pr-4">
-            {currentChat ? (
-              <>
-                {messages.map((m, index) => (
-                  <div key={index} ref={scrollRef}>
-                    <Message
-                      message={m}
-                      own={m.senderId === doctor.id}
-                      receiverProfilePicture={receiverData?.profilePic}
-                      receiverName={receiverData?.name}
-                    />
+              {currentChat ? (
+                <>
+                  {messages.map((m, index) => (
+                    <div key={index} ref={scrollRef}>
+                      <Message
+                        message={m}
+                        own={m.senderId === doctor.id}
+                        receiverProfilePicture={receiverData?.profilePic}
+                        receiverName={receiverData?.name}
+                      />
+                    </div>
+                  ))}
+                  <div className="flex items-center mt-auto">
+                    <textarea
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none ml-4 mb-5"
+                      placeholder="Write a message..."
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      value={newMessage}
+                    ></textarea>
+                    <button
+                      className="ml-2 px-3 py-2 bg-blue-500 text-white rounded-lg cursor-pointer focus:outline-none hover:bg-blue-600"
+                      onClick={handleSubmit}
+                    >
+                      <FiSend size={18} />
+                    </button>
                   </div>
-                ))}
-                <div className="flex items-center mt-auto">
-                  <textarea
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none ml-4 mb-5"
-                    placeholder="Write a message..."
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    value={newMessage}
-                  ></textarea>
-                  <button
-                    className="ml-2 px-3 py-2 bg-blue-500 text-white rounded-lg cursor-pointer focus:outline-none hover:bg-blue-600"
-                    onClick={handleSubmit}
-                  >
-                    <FiSend size={18} />
-                  </button>
+                </>
+              ) : (
+                <div className="text-center text-xl text-gray-400 mt-20 lg:mt-52">
+                  Open a chat to start conversation..
                 </div>
-              </>
-            ) : (
-              <div className="text-center text-xl text-gray-400 mt-20 lg:mt-52">
-                Open a chat to start conversation..
-              </div>
-            )}
-             </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

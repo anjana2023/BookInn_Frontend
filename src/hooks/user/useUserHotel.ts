@@ -1,6 +1,5 @@
 import axiosJWT from "../../utils/axiosService"
 import { useState, useEffect } from "react"
-import useSWR from "swr"
 import { USER_API } from "../../constants"
 import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
@@ -9,7 +8,6 @@ import {
   setError,
   setSearchResult,
 } from "../../redux/slices/destinationSlice"
-import { fetcher, useFetchData } from "../../utils/fetcher"
 import { setData } from "../../redux/slices/searchingSlice"
 import { HotelInterface } from "../../types/hotelInterface"
 
@@ -25,28 +23,32 @@ const useUserHotels = () => {
   const [rooms, setRooms] = useState(1)
   const navigate = useNavigate()
   const [loading, setLoadingState] = useState(true)
-  const { data: hotelsData, isLoading, isError:error } = useFetchData<HotelInterface[]>(`${USER_API}/hotels`, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    onSuccess: () => {
-      setLoadingState(false);
-    },
-    onError: () => {
-      setLoadingState(false);
-    },
-  });
+  const [hotelsData, setHotelsData] = useState<HotelInterface[]>([])
+  const [error, setErrorState] = useState<string | null>(null)
 
-  useEffect(() =>{
-    console.log(hotelsData,".......$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$..............")
-    if (hotelsData) {
+  const fetchHotels = async () => {
+    try {
+      const response = await axiosJWT.get(`${USER_API}/hotels`)
+      console.log(response,"......respomse.....")
+      setHotelsData(response.data.Hotels)
       setLoadingState(false)
+    } catch (err) {
+      setErrorState("Failed to fetch hotels")
+      setLoadingState(false)
+      console.error(err)
     }
+  }
+
+  useEffect(() => {
+    fetchHotels()
+  }, [])
+
+  useEffect(() => {
     if (error) {
-      dispatch(setError("Failed to fetch hotels"))
-      console.error(error)
-      setLoadingState(false)
+      dispatch(setError(error))
     }
-  }, [hotelsData, error, dispatch])
+  }, [error, dispatch])
+
   console.log(hotelsData, "hotels....")
 
   type optionType = {
@@ -65,6 +67,8 @@ const useUserHotels = () => {
     options: optionType,
     dates: datesType
   ) => {
+  console.log(hotelsData, "hotels....")
+
     console.log(place, "destination........")
     console.log(options, "options..........")
     console.log(dates, "dates......")
@@ -87,6 +91,7 @@ const useUserHotels = () => {
           endDate,
         },
       })
+
       const searchData = {
         place,
         dates: [{ startDate, endDate }],
@@ -95,22 +100,17 @@ const useUserHotels = () => {
       dispatch(setSearchResult(data.data))
       dispatch(setData(searchData))
       navigate("/user/hotels")
-    } catch (error) {
+    } catch (err) {
       dispatch(setError("Failed to fetch hotels"))
-      console.error(error)
+      console.error(err)
     } finally {
       dispatch(setLoading(false))
       setLoadingState(false)
     }
   }
 
-  if (error) {
-    dispatch(setError("Failed to fetch hotels"))
-    console.error(error)
-  }
-
   return {
-    hotels: hotelsData ? hotelsData.Hotels : [],
+    hotels: hotelsData ? hotelsData : [],
     place,
     checkInDate,
     checkOutDate,

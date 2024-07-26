@@ -138,7 +138,7 @@ console.log(booking,"...........&&&&&&&&&&&&&&&&&&&&&&&&&")
                   >
                     <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white  bg-gradient-400 dark:bg-gray-900 rounded-md group-hover:bg-opacity-0 flex items-center">
                       <BsChatDots className="w-5 h-5 mr-2" />
-                      Chat with Hotel
+                      Chat with user
                     </span>
                   </button>
                   </div>

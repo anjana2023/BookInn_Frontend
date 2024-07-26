@@ -8,9 +8,12 @@ import React from "react";
 import { BookingInterface, BookingResponse } from "../../types/hotelInterface";
 import { fetcher } from "../../utils/fetcher";
 import axiosJWT from "../../utils/axiosService";
+import AddReview from "../../components/AddReview";
 import { useAppSelector } from "../../redux/store/store";
 import { MessageCircleMore } from "lucide-react";
 import { BsChatDots } from "react-icons/bs";
+import  starImg from "../../assets/images/stars.jpg";
+
 import axios from "axios";
 // ... other imports
 
@@ -19,6 +22,7 @@ const BookingDetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams<{ id: string }>();
   const user = useAppSelector((state) => state.userSlice);
+  const [showReviewModal, setShowReviewModal] = useState(false);
   const navigate = useNavigate();
   const [showTooltip, setTooltip] = useState<boolean>(false);
   const { data, error } = useSWR<BookingResponse>(
@@ -33,8 +37,7 @@ const BookingDetails = () => {
     }
   }, [data]);
 
-  useEffect(() => {
-  }, [booking]);
+  useEffect(() => {}, [booking]);
 
   if (error) {
     console.error("Error fetching booking:", error);
@@ -49,7 +52,7 @@ const BookingDetails = () => {
     axios
       .post(CHAT_API + `/conversations`, {
         senderId: user.id,
-        recieverId: booking?.hotelId
+        recieverId: booking?.hotelId,
       })
       .then(({}) => {
         navigate("/user/chat");
@@ -84,9 +87,16 @@ const BookingDetails = () => {
     }
   };
 
+  const showReview = () => {
+    setShowReviewModal(true);
+  };
+
   console.log("Booking State.............................:", booking); // Check the booking state after update
 
-  const canCancelBooking = booking && booking.paymentStatus !== "Refunded" && (booking.status === "pending" || booking.status === "booked");
+  const canCancelBooking =
+    booking &&
+    booking.paymentStatus !== "Refunded" &&
+    (booking.status === "pending" || booking.status === "booked");
 
   return (
     <div className="w-screen h-fit overflow-hidden flex justify-center">
@@ -178,7 +188,20 @@ const BookingDetails = () => {
                     </span>
                   </button>
                 </div>
-
+                <div className="flex justify-center mt-5">
+                  {booking &&
+                  new Date(booking.checkOutDate).getTime() < Date.now() ? (
+                    <div
+                      onClick={showReview}
+                      className="show-chat mx-10 mb-6 mt-4 text-Marine_blue hover:text-green-600 flex flex-col justify-end items-center cursor-pointer"
+                    >
+                      <img src={starImg} className="h-10" alt="user" />
+                      <span>Rate & Review</span>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                </div>
                 <div className="border rounded-lg p-4 my-3">
                   <h2 className="text-lg font-medium mb-2">Property Rules</h2>
                   <div className="bg-gray-50 p-4 rounded-lg">
@@ -188,9 +211,20 @@ const BookingDetails = () => {
                   </div>
                 </div>
               </div>
+              <div>
+                <AddReview
+                  isOpen={showReviewModal}
+                  onClose={() => setShowReviewModal(false)}
+                  id={booking.hotelId._id}
+                />
+              </div>
             </div>
           )}
-          <div className={`flex justify-${canCancelBooking ? "between" : "center"} mx-40`}>
+          <div
+            className={`flex justify-${
+              canCancelBooking ? "between" : "center"
+            } mx-40`}
+          >
             <button
               onClick={() => navigate(-1)}
               className="relative inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-green-400 to-blue-600 group-hover:from-green-400 group-hover:to-blue-600 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800"

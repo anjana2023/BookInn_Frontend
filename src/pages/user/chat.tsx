@@ -18,7 +18,6 @@ const Chat: React.FC = () => {
   const [newMessage, setNewMessage] = useState<string>("");
   const [arrivalMessage, setArrivalMessage] = useState<any>(null);
   const [receiverData, setReceiverData] = useState<any | null>(null);
-  // const socket = useRef<any>();
   const scrollRef = useRef<HTMLDivElement>(null);
   const socket = useSocket();
 
@@ -30,6 +29,7 @@ const Chat: React.FC = () => {
         createdAt: Date.now(),
       });
     });
+
     socket?.on("updateLastMessage", (data: any) => {
       setConversations((prevConversations) => {
         const updatedConversations = prevConversations.map((conversation) =>
@@ -38,11 +38,13 @@ const Chat: React.FC = () => {
             : conversation
         );
 
-        updatedConversations.sort(
-          (a, b) =>
+        updatedConversations.sort((a, b) => {
+          if (!a.lastMessage || !b.lastMessage) return 0; // Check for undefined
+          return (
             new Date(b.lastMessage.createdAt).getTime() -
             new Date(a.lastMessage.createdAt).getTime()
-        );
+          );
+        });
 
         return updatedConversations;
       });
@@ -61,11 +63,13 @@ const Chat: React.FC = () => {
             : conversation
         );
 
-        updatedConversations.sort(
-          (a, b) =>
+        updatedConversations.sort((a, b) => {
+          if (!a.lastMessage || !b.lastMessage) return 0; // Check for undefined
+          return (
             new Date(b.lastMessage.createdAt).getTime() -
             new Date(a.lastMessage.createdAt).getTime()
-        );
+          );
+        });
 
         return updatedConversations;
       });
@@ -96,12 +100,14 @@ const Chat: React.FC = () => {
             return { ...conversation, lastMessage };
           })
         );
-        
-        updatedConversations.sort(
-          (a, b) =>
+
+        updatedConversations.sort((a, b) => {
+          if (!a.lastMessage || !b.lastMessage) return 0; // Check for undefined
+          return (
             new Date(b.lastMessage.createdAt).getTime() -
             new Date(a.lastMessage.createdAt).getTime()
-        );
+          );
+        });
 
         setConversations(updatedConversations);
       } catch (error) {
@@ -135,14 +141,11 @@ const Chat: React.FC = () => {
 
     try {
       const response = await axiosJWT.get(`${USER_API}/OwnerDetails/${id}`);
-
-      console.log(response,"#################################################")
-
       setReceiverData(response.data.Hotel); // Assuming the profile picture URL is stored in `profilePicture`
     } catch (error) {
       console.error("Error fetching receiver details:", error);
-      // Handle error: Log or display error message
     }
+
     const lastMessageResponse = await axiosJWT.get(
       `${CHAT_API}/messages/${conversation._id}`
     );
@@ -154,11 +157,13 @@ const Chat: React.FC = () => {
           : conv
       );
 
-      updatedConversations.sort(
-        (a, b) =>
+      updatedConversations.sort((a, b) => {
+        if (!a.lastMessage || !b.lastMessage) return 0; // Check for undefined
+        return (
           new Date(b.lastMessage.createdAt).getTime() -
           new Date(a.lastMessage.createdAt).getTime()
-      );
+        );
+      });
 
       return updatedConversations;
     });
@@ -194,11 +199,13 @@ const Chat: React.FC = () => {
             : conversation
         );
 
-        updatedConversations.sort(
-          (a, b) =>
+        updatedConversations.sort((a, b) => {
+          if (!a.lastMessage || !b.lastMessage) return 0; // Check for undefined
+          return (
             new Date(b.lastMessage.createdAt).getTime() -
             new Date(a.lastMessage.createdAt).getTime()
-        );
+          );
+        });
 
         return updatedConversations;
       });
@@ -218,8 +225,6 @@ const Chat: React.FC = () => {
         {/* Chat Menu */}
         <div className="w-full lg:w-1/4 bg-gray-200">
           <div className="p-4 h-full flex flex-col">
-            {/* Search Bar */}
-  
             {conversations.map((conversation, index) => (
               <div
                 key={index}

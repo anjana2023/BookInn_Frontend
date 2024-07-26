@@ -15,12 +15,12 @@ const useOwnerProfile = () => {
     name: string;
     phone: string;
     email:string
-    imageFile: File | null;
+    imageFile: File[];
   }>({
     name: "",
     phone: "",
     email:"",
-    imageFile:null
+    imageFile: [],
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -41,7 +41,7 @@ const useOwnerProfile = () => {
       //   }));
       // })
       .then(({data})=>{
-        console.log('Api.',data);
+      
         if(data.success){
           const owner=data.user
           console.log('Owner here',owner);
@@ -78,7 +78,7 @@ const useOwnerProfile = () => {
             reader.readAsDataURL(file);
             setFormData((prev) => ({
                 ...prev,
-                imageFile: file,
+                imageFile: [file],
             }));
         }
     } else {

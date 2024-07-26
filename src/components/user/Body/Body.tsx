@@ -19,7 +19,7 @@ const Body: React.FC = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <div className="bg-gradient-to-r from-orange-500 to-blue-400 py-12 flex flex-col items-center justify-center text-center text-white relative overflow-hidden">
+      <div className="bg-gradient-to-r from-orange-500 to-blue-500 py-12 flex flex-col items-center justify-center text-center text-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-20">
           {/* <Lottie options={defaultOptions} height="100%" width="100%" /> */}
         </div>

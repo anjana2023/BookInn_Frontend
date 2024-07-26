@@ -46,66 +46,65 @@ const HotelData: React.FC<HotelDataProps> = ({ image, name, _id, status, isBlock
 
   return (
     <>
-    <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-      <td className="p-4">
-        <img className="w-24 h-24 object-cover rounded" src={image} alt={name} />
-      </td>
-      <td className="p-4 text-center">
-        <h5 className="text-xl font-bold text-gray-900">{name}</h5>
-      </td>
-      <td className="p-4 text-center">
-        <p className="text-gray-900 text-bold ">{status}</p>
-      </td>
-      <td className="px-6 py-4 text-left">
-        <button
-          onClick={toggleConfirmDialog}
-          className={`px-4 py-2 rounded-md focus:outline-none ${
-            isChecked ? "bg-red-500" : "bg-green-500"
-          } text-white`}
-        >
-          {isChecked ? "Blocked" : "Block"}
-        </button>
-      </td>
-      <td className="p-4 text-center">
-        <Button onClick={handleClick} outline gradientDuoTone="purpleToBlue">
-          View Details
-        </Button>
-      </td>
-    </tr>
-     {showConfirm && (
-      <div className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="bg-white p-6 rounded-md shadow-md z-50">
-          <h1 className="text-xl font-bold mb-4">Confirm Action</h1>
-          <p className="mb-4">Are you sure you want to {isChecked ? "unblock" : "block"} this owner?</p>
-          <div className="flex justify-end space-x-4">
-            <button
-              onClick={handleCheckboxChange}
-              className="px-4 py-2 bg-green-500 text-white rounded-md"
-            >
-              Yes
-            </button>
-            <button
-              onClick={toggleConfirmDialog}
-              className="px-4 py-2 bg-gray-500 text-white rounded-md"
-            >
-              No
-            </button>
+      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+        <td className="p-4">
+          <img className="w-24 h-24 object-cover rounded" src={image} alt={name} />
+        </td>
+        <td className="p-4 text-center">
+          <h5 className="text-xl font-bold text-gray-900">{name}</h5>
+        </td>
+        <td className="p-4 text-center">
+          <p className="text-gray-900 text-bold ">{status}</p>
+        </td>
+        <td className="px-6 py-4 text-left">
+          <button
+            onClick={toggleConfirmDialog}
+            className={`px-4 py-2 rounded-md focus:outline-none ${
+              isChecked ? "bg-red-500" : "bg-green-500"
+            } text-white`}
+          >
+            {isChecked ? "Blocked" : "Block"}
+          </button>
+        </td>
+        <td className="p-4 text-center">
+          <Button onClick={handleClick} outline gradientDuoTone="purpleToBlue">
+            View Details
+          </Button>
+        </td>
+      </tr>
+      {showConfirm && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+          <div className="bg-white p-6 rounded-md shadow-md z-50">
+            <h1 className="text-xl font-bold mb-4">Confirm Action</h1>
+            <p className="mb-4">Are you sure you want to {isChecked ? "unblock" : "block"} this hotel?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={handleCheckboxChange}
+                className="px-4 py-2 bg-green-500 text-white rounded-md"
+              >
+                Yes
+              </button>
+              <button
+                onClick={toggleConfirmDialog}
+                className="px-4 py-2 bg-gray-500 text-white rounded-md"
+              >
+                No
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-  )};
-</>
-);
+      )}
+    </>
+  );
 };
 
 const Hotels: React.FC = () => {
   const { hotels, error } = useHotelList();
-  const approvedHotels = hotels.filter((hotel) => hotel.isApproved);
-
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 4;
-  const totalPages = Math.ceil(approvedHotels.length / itemsPerPage);
+
+  const approvedHotels = hotels.filter((hotel) => hotel.status === 'approved' && !hotel.isBlocked);
 
   const handlePageClick = (selectedItem: { selected: number }) => {
     setCurrentPage(selectedItem.selected);
@@ -127,19 +126,11 @@ const Hotels: React.FC = () => {
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" className="p-4">
-                Image
-              </th>
-              <th scope="col" className="p-4 text-center">
-                Name
-              </th>
-              <th scope="col" className="p-4 text-center">
-                Status
-              </th>
-              <th scope="col" className="p-4 text-center">
-                Block/Unblock
-              </th>
-             
+              <th scope="col" className="p-4">Image</th>
+              <th scope="col" className="p-4 text-center">Name</th>
+              <th scope="col" className="p-4 text-center">Status</th>
+              <th scope="col" className="p-4 text-center">Block/Unblock</th>
+              <th scope="col" className="p-4 text-center">View Details</th>
             </tr>
           </thead>
           <tbody>
@@ -157,9 +148,7 @@ const Hotels: React.FC = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="p-4 text-center">
-                  No approved hotels available.
-                </td>
+                <td colSpan={5} className="p-4 text-center">No approved hotels available.</td>
               </tr>
             )}
           </tbody>
@@ -169,10 +158,7 @@ const Hotels: React.FC = () => {
             previousLabel={'Previous'}
             nextLabel={'Next'}
             breakLabel={'...'}
-            breakClassName={'break-me'}
-            pageCount={totalPages}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={5}
+            pageCount={Math.ceil(approvedHotels.length / itemsPerPage)}
             onPageChange={handlePageClick}
             containerClassName={'flex justify-center items-center space-x-2'}
             pageClassName={'px-3 py-1 border border-gray-300 text-gray-700 cursor-pointer'}

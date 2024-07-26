@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import useHotelDetails from "../../hooks/user/useHotelDetails";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
@@ -13,6 +13,13 @@ import { setData } from "../../redux/slices/searchingSlice";
 import SearchBoxDetail from "./searchDate";
 import CustomMap from "../addLocation/Map";
 import { BiSolidNavigation } from "react-icons/bi";
+import EditReview from "../../components/EditReview"
+import { useFetchData } from "../../utils/fetcher";
+import { USER_API } from "../../constants";
+import ReviewCard from "../Review/ReviewCard";
+import StarComponent from "../Review/starComponent";
+import noProfile  from "../../assets/images/chat.svg"
+import { Review } from "../../types/reviewInterface";
 
 interface RoomNumber {
   number: number;
@@ -48,16 +55,18 @@ const HotelDetail: React.FC = () => {
   const { isAuthenticated } = useAppSelector((state) => state.userSlice);
   const { hotel, loading, error } = useHotelDetails(id);
   const [err, setErr] = useState("");
-
+  const [review, setReview] = useState<Review[] | null>(null)
+  const [showReviewModal, setShowReviewModal] = useState(false)
+  const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null)
   const searchingData = useAppSelector((state) => state.searchingSlice);
-
+  const user = useAppSelector(state => state.userSlice)
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showAllPhotos, setShowAllPhotos] = useState(false);
   const [roomSelections, setRoomSelections] = useState<{
     [key: string]: { count: number; price: number; roomNumbers: RoomNumber[] };
   }>({});
-
+  
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -67,6 +76,25 @@ const HotelDetail: React.FC = () => {
   if (!hotel) {
     return <div>No hotel data available</div>;
   }
+  const { data} = useFetchData<any>(`${USER_API}/getRating/${id}`)
+
+  useEffect(() => {
+    console.log(data, "review.......")
+
+    if (data) {
+      setReview(data.result)
+    }
+  }, [data])
+  
+  const sumOfRatings = review
+    ? review.reduce((acc, curr) => acc + curr.rating, 0)
+    : 0
+  const avgRatings = sumOfRatings && review ? sumOfRatings / review.length : 0
+
+  console.log(sumOfRatings, "sum of ratings.........")
+  console.log(avgRatings)
+
+  console.log(review, "😆")
   console.log(searchingData.dates, "'''''''''''''''''''''''''''");
   const dates = getDatesInRange(
     searchingData.dates[0].startDate,
@@ -93,6 +121,11 @@ const HotelDetail: React.FC = () => {
       roomNumbers: room.roomNumbers.filter(isRoomNumberAvailable),
     }));
 
+
+    const handleEdit = (id: string) => {
+      setSelectedReviewId(id)
+      setShowReviewModal(true)
+    }
   console.log(availableRooms, "availableRooms...............");
 
   const {
@@ -165,6 +198,11 @@ const HotelDetail: React.FC = () => {
     console.log(data,"............................data,,,,,,,,,,,,,,,,,,,,,,,,,");
     dispatch(setCheckoutData(data));
     navigate(`/user/checkout/${hotel._id}`);
+  };
+
+  const handleCloseReviewModal = async() => {
+    setSelectedReviewId(null);
+    setShowReviewModal(false);
   };
 
 if (showAllPhotos) {
@@ -267,6 +305,71 @@ return (
               ))}
             </ul>
           </div>
+          
+          {review && review.length && (
+        
+
+        <div className="flex flex-col gap-4  mt-10">
+           <p className="text-blue-500 text-thin font-semibold">Review & Rating</p>
+  {review && review.map(r => (
+    <div key={r?._id} className="flex flex-col border rounded-lg shadow-md p-2 space-y-2 w-full">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <img
+            className="rounded-full w-7 h-7"
+            src={r?.userId?.profilePic ? r?.userId?.profilePic : noProfile}
+            alt={`${r?.userId?.name}'s Avatar`}
+          />
+          <div className="text-gray-900 text-xl font-bold">{r?.userId?.name}</div>
+        </div>
+        <div className="text-gray-400">
+          {r?.createdAt && (
+            <>{new Date(r.createdAt).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}</>
+          )}
+        </div>
+      </div>
+      <StarComponent stars={r.rating} />
+      <div className="mt-2 space-x-2 flex flex-wrap">
+        {r?.imageUrls.map((image, index) => (
+          <div key={index} className="relative">
+            <img
+              src={image}
+              alt={`Preview ${index}`}
+              className="w-20 h-20 object-cover rounded"
+            />
+          </div>
+        ))}
+      </div>
+      <p className="text-gray-500 text-xl font-thin">{r?.description}</p>
+      {r?.userId?._id === user.id && (
+        <p
+          onClick={() => handleEdit(r?._id)}
+          className="text-right font-bold text-orange-400 cursor-pointer"
+        >
+          Edit
+        </p>
+      )}
+    </div>
+  ))}
+</div>
+
+
+      
+      )}
+      {showReviewModal && (
+        <div className="absolute inset-0 bg-black bg-opacity-45 flex items-center justify-center z-50">
+          {selectedReviewId && (
+            <EditReview
+              reviewId={selectedReviewId}
+              onClose={handleCloseReviewModal}
+            />
+          )}
+        </div>
+      )}
         </div>
         <div>
           <div className="mb-4 p-4 border rounded-lg shadow-md">
@@ -372,9 +475,11 @@ return (
         <span className="text-red-500 flex justify-center">{err}</span>
       </div>
     </div>
-        </div>
+  
       </div>
+      
     </div>
+</div>
     </div>
   </>
 );
