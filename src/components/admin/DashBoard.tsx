@@ -1,40 +1,52 @@
-import React, { useEffect } from "react";
-import Navbar from "./Navbar";
-import Sidebar from "./sidebar";
+import Card from "./Card";
+import useDashboard from "../../hooks/admin/useDashboard";
+import hotelImage from "../../assets/images/hotelorg.jpg";
+import userImg from "../../assets/images/dp.jpg";
+import bookingImg from "../../assets/images/bookingssss.webp";
+import revenue from "../../assets/images/reven.png";
+import AreaChartComponent from "./AreaChart";
+import RevenueChart from "./RevenueChart";
+import React from "react";
 
-const Dashboard: React.FC = () => {
+const DashBoard = () => {
+  const {
+    userCount,
+    totalRevenue,
+    ownerCount,
+    hotelCount,
+    bookingCount,
+    graphData,
+  } = useDashboard();
+
   return (
-    <div className="flex h-screen">
-      <div className="flex flex-col w-full">
-        <div className="p-6">
-          <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-          <div className="grid grid-cols-3 gap-6">
-            {/* Card 1: Doctors Count */}
-            <div className="bg-white shadow-md rounded-lg p-6">
-              <h2 className="text-lg font-bold mb-2">Users Count</h2>
-              <p className="text-3xl font-bold">100</p>
-            </div>
-            {/* Card 2: Patients Count */}
-            <div className="bg-white shadow-md rounded-lg p-6">
-              <h2 className="text-lg font-bold mb-2">Owners Count</h2>
-              <p className="text-3xl font-bold">500</p>
-            </div>
-            
-            <div className="bg-white shadow-md rounded-lg p-6">
-              <h2 className="text-lg font-bold mb-2">Total Booking Today</h2>
-              <p className="text-3xl font-bold">350</p>
-            </div>
-          </div>
-          {/* Placeholder Graph */}
-          <div className="bg-white shadow-md rounded-lg p-6 mt-6">
-            <h2 className="text-lg font-bold mb-4">Booking Over Time</h2>
-            {/* Placeholder for graph */}
-            <div className="h-64 bg-gray-200"></div>
-          </div>
+    <>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <Card title="Users" total={userCount.toString()}>
+          <img src={userImg} alt="user" className="w-full h-auto" />
+        </Card>
+        <Card title="Owners" total={ownerCount.toString()}>
+          <img src={userImg} alt="owner" className="w-full h-auto" />
+        </Card>
+        <Card title="Hotels" total={hotelCount.toString()}>
+          <img src={hotelImage} alt="hotel" className="w-full h-auto" />
+        </Card>
+        <Card title="Bookings" total={bookingCount.toString()}>
+          <img src={bookingImg} alt="booking" className="h-11 w-auto" />
+        </Card>
+        <Card title="Revenue" total={totalRevenue.toString()}>
+          <img src={revenue} alt="revenue" className="h-11 w-auto" />
+        </Card>
+      </div>
+      <div className="grid grid-cols-1 gap-4 mt-10 md:grid-cols-2 lg:gap-6">
+        <div className="bg-varWhite border shadow-md rounded-lg p-4">
+          <AreaChartComponent data={graphData} />
+        </div>
+        <div className="bg-varWhite border shadow-md rounded-lg p-4">
+          <RevenueChart />
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
-export default Dashboard;
+export default DashBoard;

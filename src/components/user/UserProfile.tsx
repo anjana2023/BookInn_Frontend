@@ -13,7 +13,7 @@ const UserProfile = () => {
   } = useProfile();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4 py-12">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white px-4 py-12">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg border border-gray-200 overflow-hidden">
         {/* Profile Picture Section */}
         <div className="flex flex-col items-center relative mb-6">
@@ -94,7 +94,7 @@ const UserProfile = () => {
           <div className="flex justify-center mt-6">
             <button
               type="submit"
-              className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-orange-400 text-white py-2 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Update Profile
             </button>

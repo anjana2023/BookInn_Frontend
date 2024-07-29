@@ -128,6 +128,7 @@ console.log(data,"///////////////////user")
         maxChildren: bookingData.children,
         rooms: roomDetails,
         price: amountToPay,
+        platformFee,
         totalDays: bookingData.totalDays,
         paymentMethod,
       }

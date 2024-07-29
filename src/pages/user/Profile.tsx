@@ -6,11 +6,11 @@ import UserProfile from "../../components/user/UserProfile";
 
 const Profile = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen ">
       <Navbar />
-      <div className="flex flex-row gap-2">
+      <div className="flex flex-row">
         <ProfileSidebar />
-        <main className="flex-grow p-6">
+        <main className="flex-grow bg-white">
           <UserProfile />
           <Outlet />
         </main>

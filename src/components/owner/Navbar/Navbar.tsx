@@ -11,6 +11,7 @@ const Navbar = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogOut = () => {
     dispatch(clearOwner());
@@ -21,117 +22,122 @@ const Navbar = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
-    <nav className="sticky top-0 z-10 block w-full max-w-full ps-8 py-2 text-white bg-gray-800 rounded-none shadow-md h-max bg-opacity-100 backdrop-blur-2xl backdrop-saturate-200 lg:px-8 lg:py-4">
-      <div className="flex items-center justify-between text-white-gray-900">
-        <Link
-          to="#"
-          className="mr-4 block cursor-pointer py-1.5 text-2xl font-bold text-base font-head leading-relaxed text-orange-500"
-        >
+    <nav className="sticky top-0 z-10 w-full bg-gray-800 text-white shadow-md lg:px-8 lg:py-4">
+      <div className="flex items-center justify-between px-4 py-2">
+        <Link to="/" className="text-2xl font-bold text-orange-500">
           BookInn
         </Link>
-
         <div className="flex items-center gap-4">
-          <div className="hidden mr-4 lg:block">
-            <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-              <li className="block p-1 font-sans font-semibold text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <Link to="/owner" className="flex items-center text-orange-500">
-                  Home
-                </Link>
+          {/* Desktop Menu */}
+          <div className={`hidden lg:flex items-center ${isMenuOpen ? "block" : "hidden"}`}>
+            <ul className="flex gap-4">
+              <li>
+                <Link to="/owner" className="text-orange-500">Home</Link>
               </li>
               {owner.isAuthenticated && owner.role === "owner" && (
-                <li className="relative block p-1 font-sans font-semibold text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                  <button
-                    onClick={toggleDropdown}
-                    className="flex items-center text-orange-500 focus:outline-none"
-                  >
+                <li className="relative">
+                  <button onClick={toggleDropdown} className="flex items-center text-orange-500 focus:outline-none">
                     Profile <ChevronDownIcon className="w-4 h-4 ml-1" />
                   </button>
                   {isDropdownOpen && (
-                    <ul className="absolute right-0 w-40 mt-2 bg-white border rounded shadow-lg">
+                    <ul className="absolute right-0 w-40 mt-2 bg-white text-gray-700 rounded shadow-lg">
                       <li>
-                        <Link
-                          to="/owner/profile"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          Profile
-                        </Link>
+                        <Link to="/owner/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link>
                       </li>
                       <li>
-                        <Link
-                          to="/owner/chat"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          Chat
-                        </Link>
+                        <Link to="/owner/chat" className="block px-4 py-2 hover:bg-gray-100">Chat</Link>
                       </li>
                     </ul>
                   )}
                 </li>
               )}
-              <li className="block p-1 font-sans font-semibold text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <Link to="/owner/AboutUs" className="flex items-center text-orange-500">
-                  About Us
-                </Link>
+              <li>
+                <Link to="/owner/AboutUs" className="text-orange-500">About Us</Link>
               </li>
-              <li className="block p-1 font-sans font-semibold text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                <Link to="/owner/contact" className="flex items-center text-orange-500">
-                  Contact Us
-                </Link>
+              <li>
+                <Link to="/owner/contact" className="text-orange-500">Contact Us</Link>
               </li>
             </ul>
           </div>
-          <div className="flex items-center gap-x-1">
+
+          {/* Authentication Buttons */}
+          <div className="hidden lg:flex items-center gap-4">
             {owner.isAuthenticated && owner.role === "owner" ? (
-              <button
-                onClick={handleLogOut}
-                className="hidden px-4 py-2 font-sans text-xs bg-blue-300 font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-lg select-none hover:bg-blue-500 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
-                type="button"
-              >
-                <span className="text-orange-500">SIGN OUT</span>
+              <button onClick={handleLogOut} className="px-4 py-2 bg-blue-300 text-gray-900 uppercase rounded-lg hover:bg-blue-500">
+                SIGN OUT
               </button>
             ) : (
               <>
-                <Link
-                  to="/owner/auth/login"
-                  className="hidden px-4 py-2 font-sans text-xs bg-white font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-lg select-none hover:bg-gray-300 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
-                  type="button"
-                >
-                  <span className="text-orange-500">SIGN IN</span>
+                <Link to="/owner/auth/login" className="px-4 py-2 bg-white text-gray-900 uppercase rounded-lg hover:bg-gray-300">
+                  SIGN IN
                 </Link>
-                <Link
-                  to="/owner/auth/register"
-                  className="hidden px-4 py-2 font-sans text-xs bg-white font-bold text-center text-gray-900 uppercase align-middle transition-all rounded-lg select-none hover:bg-gray-300 active:bg-gray-900/20 disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:inline-block"
-                  type="button"
-                >
-                  <span className="text-orange-500">SIGN UP</span>
+                <Link to="/owner/auth/register" className="px-4 py-2 bg-white text-gray-900 uppercase rounded-lg hover:bg-gray-300">
+                  SIGN UP
                 </Link>
               </>
             )}
           </div>
-          <button
-            className="relative ml-auto h-6 max-h-[40px] w-6 max-w-[40px] select-none rounded-lg text-center align-middle font-sans text-xs font-medium uppercase text-inherit transition-all hover:bg-transparent focus:bg-transparent active:bg-transparent disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none lg:hidden"
-            type="button"
-          >
-            <span className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinejoin="round"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4 6h16M4 12h16M4 18h16"
-                ></path>
-              </svg>
-            </span>
+
+          {/* Mobile Menu Button */}
+          <button onClick={toggleMenu} className="lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
           </button>
         </div>
       </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="lg:hidden bg-gray-800">
+          <ul className="flex flex-col gap-4 p-4">
+            <li>
+              <Link to="/owner" className="text-orange-500">Home</Link>
+            </li>
+            {owner.isAuthenticated && owner.role === "owner" && (
+              <>
+                <li>
+                  <Link to="/owner/profile" className="text-orange-500">Profile</Link>
+                </li>
+                <li>
+                  <Link to="/owner/chat" className="text-orange-500">Chat</Link>
+                </li>
+              </>
+            )}
+            <li>
+              <Link to="/owner/AboutUs" className="text-orange-500">About Us</Link>
+            </li>
+            <li>
+              <Link to="/owner/contact" className="text-orange-500">Contact Us</Link>
+            </li>
+            {owner.isAuthenticated && owner.role === "owner" ? (
+              <li>
+                <button onClick={handleLogOut} className="w-full px-4 py-2 bg-orange-400 text-gray-900 uppercase rounded-lg hover:bg-blue-500">
+                  SIGN OUT
+                </button>
+              </li>
+            ) : (
+              <>
+                <li>
+                  <Link to="/owner/auth/login" className="block px-4 py-2 bg-white text-gray-900 uppercase rounded-lg hover:bg-gray-300">
+                    SIGN IN
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/owner/auth/register" className="block px-4 py-2 bg-white text-gray-900 uppercase rounded-lg hover:bg-gray-300">
+                    SIGN UP
+                  </Link>
+                </li>
+              </>
+            )}
+          </ul>
+        </div>
+      )}
     </nav>
   );
 };

@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { FormikErrors, useFormik } from "formik";
 import { useDispatch } from "react-redux";
+import { FaPlus } from 'react-icons/fa';
 import { setCheckoutData } from "../../redux/slices/bookingSlice";
 import { useAppSelector } from "../../redux/store/store";
 import { AiFillStar } from "react-icons/ai";
@@ -231,7 +232,7 @@ if (showAllPhotos) {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {imageUrls.map((url: any, index: React.Key | null | undefined) => (
             <div key={index} className="flex justify-center items-center">
-              <Image
+              <img
                 src={url}
                 alt={`Photo ${index}`}
                 className="object-cover rounded-lg shadow-md"
@@ -260,7 +261,7 @@ return (
             <div key={index}>
               <img
                 src={url}
-                alt={`Houseboat ${index + 1}`}
+                alt="Houseboat"
                 className="w-full h-40 rounded-lg object-cover shadow-md"
               />
             </div>
@@ -274,145 +275,32 @@ return (
         <p className="text-gray-700 mb-2">{stayType}</p>
         <p className="text-gray-600 mb-2">{destination}</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div>
-          <div className="flex items-center mb-4">
-            <span className="inline-block bg-yellow-500 text-white px-2 py-1 rounded-full text-sm font-semibold mr-2">
-              4.97
-            </span>
-            <span className="text-gray-600">(79 reviews)</span>
-          </div>
-          <div className="mb-4">
-            <p className="text-gray-800 font-medium">Hosted by Kirby</p>
-            <p className="text-gray-600">Dedicated workspace</p>
-            <p className="text-gray-600">Kirby is a Superhost</p>
-            <p className="text-gray-600">Free cancellation before Jun 3</p>
-          </div>
+      <div className="grid  gap-4 mb-6">
+       
+        
           <div className="mb-4">
             <h2 className="text-xl font-semibold mb-2">Description</h2>
             <p className="text-gray-600">{description}</p>
-          </div>
-          <div className="mb-4">
+            <div className="mb-4">
             <h2 className="text-xl font-semibold mb-2">What this place offers</h2>
             <ul className="mt-4 flex flex-wrap gap-2">
-              {amenities.map((amenity: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined, index: React.Key | null | undefined) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-yellow-100 text-sm text-gray-800 rounded-full shadow-sm"
-                >
-                  {amenity}
-                </span>
-              ))}
-            </ul>
-          </div>
-          
-          {review && review.length && (
-        
-
-        <div className="flex flex-col gap-4  mt-10">
-           <p className="text-blue-500 text-thin font-semibold">Review & Rating</p>
-  {review && review.map(r => (
-    <div key={r?._id} className="flex flex-col border rounded-lg shadow-md p-2 space-y-2 w-full">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <img
-            className="rounded-full w-7 h-7"
-            src={r?.userId?.profilePic ? r?.userId?.profilePic : noProfile}
-            alt={`${r?.userId?.name}'s Avatar`}
-          />
-          <div className="text-gray-900 text-xl font-bold">{r?.userId?.name}</div>
-        </div>
-        <div className="text-gray-400">
-          {r?.createdAt && (
-            <>{new Date(r.createdAt).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })}</>
-          )}
-        </div>
-      </div>
-      <StarComponent stars={r.rating} />
-      <div className="mt-2 space-x-2 flex flex-wrap">
-        {r?.imageUrls.map((image, index) => (
-          <div key={index} className="relative">
-            <img
-              src={image}
-              alt={`Preview ${index}`}
-              className="w-20 h-20 object-cover rounded"
-            />
-          </div>
-        ))}
-      </div>
-      <p className="text-gray-500 text-xl font-thin">{r?.description}</p>
-      {r?.userId?._id === user.id && (
-        <p
-          onClick={() => handleEdit(r?._id)}
-          className="text-right font-bold text-orange-400 cursor-pointer"
-        >
-          Edit
-        </p>
-      )}
-    </div>
+  {amenities.map((amenity:any, index:any) => (
+    <li
+      key={index}
+      className="px-3 py-1 bg-gray-200 text-sm text-gray-800 rounded-full shadow-sm flex items-center gap-2"
+    >
+      <FaPlus className="text-orange-400" />
+      {amenity}
+    </li>
   ))}
-</div>
-
-
+</ul>
       
-      )}
-      {showReviewModal && (
-        <div className="absolute inset-0 bg-black bg-opacity-45 flex items-center justify-center z-50">
-          {selectedReviewId && (
-            <EditReview
-              reviewId={selectedReviewId}
-              onClose={handleCloseReviewModal}
-            />
-          )}
-        </div>
-      )}
-        </div>
-        <div>
-          <div className="mb-4 p-4 border rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-2">Address</h2>
-            <div className="text-gray-600">
-              <p>{address.streetAddress}, {address.landMark}</p>
-              <p>{address.city}</p>
-              <p>{address.district}</p>
-              <p>{address.country}, {address.pincode}</p>
-            </div>
+
+
+</div>
           </div>
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold mb-2">Property Rules</h2>
-            <ul className="list-disc list-inside text-gray-600">
-              {propertyRules.map((rule: string | number | bigint | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<React.AwaitedReactNode> | null | undefined, index: React.Key | null | undefined) => (
-                <li key={index}>{rule}</li>
-              ))}
-            </ul>
-          </div>
-            <div>
-            <h2 className="text-3xl  mt-2" style={{ fontWeight: "bold" }}>
-                  Here to find
-                </h2>
-                <div className="rounded-md overflow-hidden  mt-4">
-                  <CustomMap
-                    longitude={hotel.location?.coordinates[0]}
-                    latitude={hotel.location?.coordinates[1]}
-                    isMarkerDraggable={false}
-                  />
-                </div>
-                <div className="flex flex-col gap-2 mt-2 text-blue-500 ">
-                  <div className="flex items-center gap-2 hover:text-blue-600">
-                    <BiSolidNavigation />
-                    <Link
-                      to={`https://maps.google.com/?q=${hotel.location?.coordinates[1]},${hotel.location?.coordinates[0]}`}
-                      target="_blank"
-                      className="font-medium hover:underline font-mono"
-                    >
-                      Get Direction
-                    </Link>
-                  </div>
-    
-      <div className="pt-16">
+          <div>
+          <div className="pt-16">
         <SearchBoxDetail handleSearch={undefined} />
       </div>
       <div className="p-4">
@@ -474,13 +362,125 @@ return (
         </div>
         <span className="text-red-500 flex justify-center">{err}</span>
       </div>
-    </div>
-  
       </div>
-      
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+  {/* Address Section */}
+  <div className="border rounded-lg shadow-md p-2">
+    <h2 className="text-xl font-semibold mb-2">Address</h2>
+    <div className="text-gray-600">
+      <p>{address.streetAddress}, {address.landMark}</p>
+      <p>{address.city}</p>
+      <p>{address.district}</p>
+      <p>{address.country}, {address.pincode}</p>
     </div>
+  </div>
+
+  {/* Property Rules Section */}
+  <div className="border rounded-lg shadow-md p-4">
+    <h2 className="text-xl font-semibold mb-2">Property Rules</h2>
+    <ul className="list-disc list-inside text-gray-600">
+      {propertyRules.map((rule, index) => (
+        <li key={index}>{rule}</li>
+      ))}
+    </ul>
+  </div>
+
+  {/* Map Section */}
+  <div className="col-span-2 border rounded-lg shadow-md p-4 mt-4 md:mt-0">
+    <h2 className="text-xl font-semibold mb-2">Location</h2>
+    <div className="rounded-md overflow-hidden mb-4">
+      <CustomMap
+        longitude={hotel.location?.coordinates[0]}
+        latitude={hotel.location?.coordinates[1]}
+        isMarkerDraggable={false}
+      />
+    </div>
+    <div className="flex flex-col gap-2 text-blue-500">
+      <div className="flex items-center gap-2 hover:text-blue-600">
+        <BiSolidNavigation />
+        <Link
+          to={`https://maps.google.com/?q=${hotel.location?.coordinates[1]},${hotel.location?.coordinates[0]}`}
+          target="_blank"
+          className="font-medium hover:underline"
+        >
+          Get Direction
+        </Link>
+      </div>
+    </div>
+  </div>
 </div>
-    </div>
+          
+{review && review.length > 0 && (
+  <div className="flex flex-col gap-4 mt-10">
+    <p className="text-blue-500 text-lg font-semibold">Review & Rating</p>
+    {review.map((r) => (
+      <div
+        key={r?._id}
+        className="flex flex-col border rounded-lg shadow-md p-6 space-y-3 w- bg-white"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <img
+              className="rounded-full w-12 h-12"
+              src={r?.userId?.profilePic ? r?.userId?.profilePic : noProfile}
+              alt={`${r?.userId?.name}'s Avatar`}
+            />
+            <div className="text-gray-900 text-xl font-semibold">{r?.userId?.name}</div>
+          </div>
+          <div className="text-gray-400 text-sm">
+            {r?.createdAt && (
+              <>
+                {new Date(r.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center mt-2">
+          <StarComponent stars={r.rating} />
+        </div>
+        <div className="mt-4 flex flex-wrap gap-3">
+          {r?.imageUrls.map((image, index) => (
+            <div key={index} className="relative">
+              <img
+                src={image}
+                alt={`Preview ${index}`}
+                className="w-20 h-20 object-cover rounded-lg shadow-sm"
+              />
+            </div>
+          ))}
+        </div>
+        <p className="text-gray-600 mt-4">{r?.description}</p>
+        {r?.userId?._id === user.id && (
+          <p
+            onClick={() => handleEdit(r?._id)}
+            className="text-right font-bold text-orange-500 cursor-pointer"
+          >
+            Edit
+          </p>
+        )}
+      </div>
+    ))}
+  </div>
+)}
+{showReviewModal && (
+  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    {selectedReviewId && (
+      <EditReview
+        reviewId={selectedReviewId}
+        onClose={handleCloseReviewModal}
+      />
+    )}
+  </div>
+)}
+
+</div>
+</div>
+   
   </>
 );
 };
