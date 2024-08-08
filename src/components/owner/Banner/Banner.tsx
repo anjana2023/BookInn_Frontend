@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import  { useState, useCallback, useEffect } from "react";
 import owner1 from "../../../assets/images/owner1.jpg";
 
 const names = ["Hotel"];

@@ -1,23 +1,16 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useHotelDetails from "../../hooks/user/useHotelDetails";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import * as Yup from "yup";
-import { FormikErrors, useFormik } from "formik";
 import { useDispatch } from "react-redux";
 import { FaPlus } from 'react-icons/fa';
 import { setCheckoutData } from "../../redux/slices/bookingSlice";
 import { useAppSelector } from "../../redux/store/store";
-import { AiFillStar } from "react-icons/ai";
-import dayjs from "dayjs";
-import { RoomInterface } from "../../types/roomInterface";
-import { setData } from "../../redux/slices/searchingSlice";
 import SearchBoxDetail from "./searchDate";
 import CustomMap from "../addLocation/Map";
 import { BiSolidNavigation } from "react-icons/bi";
 import EditReview from "../../components/EditReview"
 import { useFetchData } from "../../utils/fetcher";
 import { USER_API } from "../../constants";
-import ReviewCard from "../Review/ReviewCard";
 import StarComponent from "../Review/starComponent";
 import noProfile  from "../../assets/images/chat.svg"
 import { Review } from "../../types/reviewInterface";
@@ -27,29 +20,17 @@ interface RoomNumber {
   unavailableDates: string[];
 }
 
+
+
 interface Room {
-  title: string;
+  roomId: string;
+  roomType: string;
+  roomPrice: number;
+  count: number;
   price: number;
-  maxAdults: number;
-  maxChildren: number;
-  desc: string;
   roomNumbers: RoomNumber[];
 }
 
-const getDatesInRange = (startDate: Date, endDate: Date): string[] => {
-  const currentDate = new Date(startDate);
-  const end = new Date(endDate);
-  const datesArray: string[] = [];
-
-  while (currentDate <= end) {
-    const formattedDate = new Date(currentDate);
-    formattedDate.setUTCHours(0, 0, 0, 0);
-    datesArray.push(formattedDate.toISOString().split("T")[0]);
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  return datesArray;
-};
 
 const HotelDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -80,29 +61,43 @@ const HotelDetail: React.FC = () => {
   const { data} = useFetchData<any>(`${USER_API}/getRating/${id}`)
 
   useEffect(() => {
-    console.log(data, "review.......")
 
     if (data) {
       setReview(data.result)
     }
   }, [data])
   
+  const getDatesInRange = (startDate: Date, endDate: Date): string[] => {
+    const currentDate = new Date(startDate);
+    const end = new Date(endDate);
+    const datesArray: string[] = [];
+  
+    while (currentDate <= end) {
+      const formattedDate = new Date(currentDate);
+      formattedDate.setUTCHours(0, 0, 0, 0);
+      datesArray.push(formattedDate.toISOString().split("T")[0]);
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+  
+    return datesArray;
+  };
+  
+
+
   const sumOfRatings = review
     ? review.reduce((acc, curr) => acc + curr.rating, 0)
     : 0
   const avgRatings = sumOfRatings && review ? sumOfRatings / review.length : 0
 
-  console.log(sumOfRatings, "sum of ratings.........")
-  console.log(avgRatings)
 
-  console.log(review, "😆")
-  console.log(searchingData.dates, "'''''''''''''''''''''''''''");
+
+
   const dates = getDatesInRange(
     searchingData.dates[0].startDate,
     searchingData.dates[0].endDate
   );
 
-  console.log(dates, "dates...........");
+  
 
   const isRoomNumberAvailable = (roomNumber: RoomNumber): boolean => {
     return !roomNumber.unavailableDates.some((date: string) =>
@@ -127,7 +122,6 @@ const HotelDetail: React.FC = () => {
       setSelectedReviewId(id)
       setShowReviewModal(true)
     }
-  console.log(availableRooms, "availableRooms...............");
 
   const {
     name,
@@ -138,7 +132,6 @@ const HotelDetail: React.FC = () => {
     propertyRules,
     stayType,
     address,
-    rooms,
   } = hotel;
 
   const handleSelectChange = (
@@ -152,13 +145,13 @@ const HotelDetail: React.FC = () => {
     const count = parseInt(value, 10);
 
     if (count === 0) {
-      // Remove the room from the roomSelections state
+     
       setRoomSelections((prevSelections) => {
         const { [roomId]: removedRoom, ...rest } = prevSelections;
         return rest;
       });
     } else {
-      // Create an array of room numbers based on the selected count
+
       const selectedRoomNumbers = roomNumbers.slice(0, count);
 
       setRoomSelections((prevSelections) => ({
@@ -169,18 +162,27 @@ const HotelDetail: React.FC = () => {
   };
 
   const handleReserve = () => {
-    const selectedRooms = Object.entries(roomSelections);
-    if (selectedRooms.length <= 0) {
-      setErr("please select atleast one room");
+    const selectedRoomsArray: Room[] = Object.entries(roomSelections).map(([roomId, selection]) => ({
+      roomId,
+      roomType: availableRooms.find((room: { _id: string; }) => room._id === roomId)?.roomType ?? '',
+      roomPrice: availableRooms.find((room: { _id: string; }) => room._id === roomId)?.price ?? 0,
+      count: selection.count,
+      price: selection.price,
+      roomNumbers: selection.roomNumbers,
+    }));
+    
+  
+    if (selectedRoomsArray.length <= 0) {
+      setErr("Please select at least one room");
       return;
     }
-    console.log("hloooo");
 
     if (!isAuthenticated) {
       navigate(`/user/auth/login?redirectPath=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
 
+   
     const data = {
       name: hotel?.name ?? "",
       destination: hotel?.place ?? "",
@@ -189,14 +191,13 @@ const HotelDetail: React.FC = () => {
       pincode: hotel?.address.pincode ?? "",
       country: hotel?.address.country ?? "",
       hotelId: hotel?._id ?? "",
-      rooms: selectedRooms,
+      rooms: selectedRoomsArray,
       checkIn: searchingData.dates[0].startDate,
       checkOut: searchingData.dates[0].endDate,
       adults: searchingData.options.adult,
       children: searchingData.options.children,
     };
 
-    console.log(data,"............................data,,,,,,,,,,,,,,,,,,,,,,,,,");
     dispatch(setCheckoutData(data));
     navigate(`/user/checkout/${hotel._id}`);
   };
@@ -272,6 +273,18 @@ return (
       {/* Details */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">{name}</h1>
+        {review ? (
+            <div className="flex items-center mb-2 gap-2">
+              <StarComponent stars={avgRatings} />
+              <span className="text-gray-600">
+                {review.length
+                  ? `(${review.length} reviews)`
+                  : `(not yet rated )`}
+              </span>
+            </div>
+          ) : (
+            ""
+          )}
         <p className="text-gray-700 mb-2">{stayType}</p>
         <p className="text-gray-600 mb-2">{destination}</p>
       </div>
@@ -301,7 +314,7 @@ return (
           </div>
           <div>
           <div className="pt-16">
-        <SearchBoxDetail handleSearch={undefined} />
+        <SearchBoxDetail  />
       </div>
       <div className="p-4">
         <table className="min-w-full bg-white border border-gray-200">
@@ -314,7 +327,7 @@ return (
             </tr>
           </thead>
           <tbody>
-            {availableRooms.map((item: RoomInterface) => (
+            {availableRooms.map((item:any) => (
               <tr className="border-b" key={item._id}>
                 <td className="py-4 px-4 border-r">
                   <h3 className="text-lg font-semibold text-gray-800">
@@ -380,7 +393,7 @@ return (
   <div className="border rounded-lg shadow-md p-4">
     <h2 className="text-xl font-semibold mb-2">Property Rules</h2>
     <ul className="list-disc list-inside text-gray-600">
-      {propertyRules.map((rule, index) => (
+      {propertyRules.map((rule:any, index:any) => (
         <li key={index}>{rule}</li>
       ))}
     </ul>

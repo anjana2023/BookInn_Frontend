@@ -1,13 +1,10 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../redux/store/store";
-import React from "react";
 
 const ChatIcon = () => {
   const { role, isAuthenticated } = useAppSelector((state) => state.userSlice);
-//   const socket = useSocket();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  // const [notificationCount, setNotificationCount] = useState<number>(0);
 
   const isExcludedRoute =
     pathname === "/chat" ||

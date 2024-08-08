@@ -4,19 +4,16 @@ import PaymentMessage from "../../pages/user/payment";
 import axiosJWT from "../../utils/axiosService";
 import { USER_API } from "../../constants";
 import Footer from './Footer/Footer'
-import React from "react";
 
 const PaymentCompleted = () => {
   const [searchParams] = useSearchParams();
   const { id } = useParams();
 
   const status = searchParams.get("success");
-  console.log("......................",status)
   const isSuccess = status === "true" ? true : false;
   
   if (status) {
     const paymentStatus = isSuccess ? "Paid" : "Failed";
-    console.log(paymentStatus)
     axiosJWT
     .patch(
       `${USER_API}/payment_status/${id}`,
@@ -25,7 +22,6 @@ const PaymentCompleted = () => {
       .then(({ data }) => console.log(data))
       .catch((err: any) => console.log(err));
   }
-  console.log(status)
 
   return (
     <>

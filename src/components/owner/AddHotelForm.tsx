@@ -1,7 +1,7 @@
-import { FC, useState, useCallback, SetStateAction } from "react";
+import { FC, useState, SetStateAction } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { hotelAddValidation } from "../../utils/validation";
-import { useDropzone } from "react-dropzone";
+
 import { FaTrashAlt } from "react-icons/fa";
 import axiosJWT from "../../utils/axiosService";
 import { HotelInterface } from "../../types/hotelInterface";
@@ -9,9 +9,9 @@ import showToast from "../../utils/toast";
 import { useNavigate } from "react-router-dom";
 import PhotoUploadModal from "./photoUploadModal";
 import { OWNER_API } from "../../constants";
-import React from "react";
-import { string } from "yup";
+
 import "../../index.css"
+import mongoose from "mongoose";
 
 const AddHotelForm: FC = () => {
   const amenitiesList = [
@@ -54,8 +54,7 @@ const AddHotelForm: FC = () => {
   };
 
   const handleUpload = (imageUrls: string[]) => {
-    console.log("hiiiii");
-    console.log(imageUrls);
+
 
     setImages(imageUrls);
     setIsModalOpen(false);
@@ -64,8 +63,7 @@ const AddHotelForm: FC = () => {
   const handleHotelDocumentUpload = (
     imageUrls: SetStateAction<(string | ArrayBuffer | null)[]>
   ) => {
-    console.log("hlooooo");
-    console.log(imageUrls);
+  
     setHotelDocument(imageUrls);
     setIsHotelModalOpen(false);
   };
@@ -79,8 +77,7 @@ const AddHotelForm: FC = () => {
   };
 
   const handleSubmit = async (values: HotelInterface) => {
-    console.log('handlesubmit')
-    const response = await axiosJWT
+     await axiosJWT
       .post(
         `${OWNER_API}/addhotel`,
         {
@@ -105,9 +102,8 @@ const AddHotelForm: FC = () => {
           hotelDocument:  hotelDocument.length > 0 ? hotelDocument[0] : null,
         }
       )
-      .then(({ data }) => {
+      .then(() => {
         showToast("Hotel  added successfully", "success");
-        // showToast(data.message);
         navigate("/owner/hotels");
       })
       .catch(({ response }) => {
@@ -117,43 +113,48 @@ const AddHotelForm: FC = () => {
   return (
     <>
       <Formik
-        initialValues={{
-          _id: "",
-          name: "",
-          stayType: "",
-          place: "",
-          email: "",
-          imageUrls: [],
-          address: {
-            streetAddress: "",
-            landMark: "",
-            district: "",
-            city: "",
-            pincode: "",
-            country: "",
-          },
-          propertyRules: [],
-          guests: 0,
-          reservationType: "",
-          description: "",
-         
-          isBlocked: false,
-          amenities: [],
-          createdAt: new Date(),
-          status: "",
-          unavailbleDates: [],
-          hotelDocument: "",
-        }}
+       initialValues={{
+        Hotel: {}, 
+        _id: new mongoose.Types.ObjectId(), 
+        name: "",
+        ownerId: null,
+        place: "",
+        email: "",
+        imageUrls: [],
+        address: {
+          streetAddress: "",
+          landMark: "",
+          district: "",
+          city: "",
+          pincode: "",
+          country: "",
+        },
+        location: {
+          type: "Point",
+          coordinates: [0, 0],
+        },
+        isVerified: "", 
+        stayType: "",
+        propertyRules: [],
+        description: "",
+        isBlocked: false,
+        amenities: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isApproved: false, 
+        status: "",
+        hotelDocument: "",
+        rejectedReason: "", 
+        unavailbleDates: [],
+        rooms: [], 
+      }}
+      
         validationSchema={hotelAddValidation}
-        validate={(values) => {
-          console.log(values);
-          console.log(propertyRules);
-          console.log(images, "images");
-
+        validate={() => {
+         
           const errors: any = {};
-          console.log(hotelDocument, "hotel");
+         
           if (propertyRules.length < 2) {
-            console.log("hiaiii");
 
             errors.propertyRules = "At least two rules are required";
           }
@@ -162,18 +163,16 @@ const AddHotelForm: FC = () => {
             errors.hotelDocument = "hotel documetation is required";
           }
 
-          // Validate images
           if (images.length < 3) {
             errors.images = "At least 3 images are required";
           } else if (images.length > 5) {
             errors.images = "No more than 5 images are allowed";
           }
 
-          console.log(errors);
 
           return errors;
         }}
-        onSubmit={(values, { setSubmitting }) => handleSubmit(values)}
+        onSubmit={handleSubmit}
       >
         {({ values, setFieldValue }) => (
           <div className="px-4 py-7 md:px-14 flex justify-center norder border-gray-800 ">
@@ -500,7 +499,7 @@ const AddHotelForm: FC = () => {
                         className="bg-blue-500 text-white px-4 py-2 rounded-md"
                         onClick={() => setIsHotelModalOpen(true)}
                       >
-                        Add Photos
+                        Add Document
                       </button>
                     </div>
 

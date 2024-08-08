@@ -1,7 +1,6 @@
 import { ChangeEvent, FC, useState } from "react";
 import getPlaces from "../../api/getPlace";
 import { DebounceInput } from "react-debounce-input";
-import React from "react";
 
 interface AutoCompleteProps {
   setFormData: any;
@@ -27,8 +26,7 @@ const AutoCompleteInput: FC<AutoCompleteProps> = ({
     const searchLocation = suggestion.place_name.split(",")[0];
     const latitude = suggestion.center[1];
     const longitude = suggestion.center[0];
-    console.log(latitude,"............latitude")
-    console.log(longitude,"............latitude")
+  
 
     setFormData({
       searchLocation,

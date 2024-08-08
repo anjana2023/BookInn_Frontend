@@ -10,7 +10,7 @@ const Layout: React.FC = () => {
         <Navbar />
       </div>
       <div className="flex flex-grow  overflow-y-auto">
-        <div className="flex-none " style={{ width: "25%" }}>
+        <div className="flex-none " style={{ width: "20%" }}>
           <Sidebar />
         </div>
         <div className="flex-grow">

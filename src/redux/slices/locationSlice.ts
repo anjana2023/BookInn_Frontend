@@ -22,7 +22,7 @@ const locationSlice = createSlice({
       state.location = action.payload;
     },
     removeLocation: (state) => {
-      state.location = { lng: 0, lat: 0 }; // Reset to default value
+      state.location = { lng: 0, lat: 0 }; 
     },
   },
 });

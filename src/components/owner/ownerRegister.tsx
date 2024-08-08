@@ -1,6 +1,5 @@
-import React from "react";
 import { useFormik } from "formik";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link,  useNavigate } from "react-router-dom";
 import axios from "axios";
 import { RegisterValidation } from "../../utils/validation";
 import { OWNER_API } from "../../constants";
@@ -30,8 +29,7 @@ const RegisterForm = () => {
       axios
         .post(OWNER_API + "/auth/register", { name, email, password, phone })
         .then(({ data }) => {
-          const { message, newOwner } = data;
-          console.log(data);
+          const {  newOwner } = data;
           showToast(data.message, "success");
           setTimeout(() => {
             setItemToLocalStorage("ownerId", newOwner._id);

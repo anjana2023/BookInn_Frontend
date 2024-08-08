@@ -1,27 +1,22 @@
-import useSWR from "swr";
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { CHAT_API, USER_API } from "../../constants";
 import { BookingInterface, BookingResponse } from "../../types/hotelInterface";
 import axios from "axios";
-import showToast from "../../utils/toast";
 import { useFetchData } from "../../utils/fetcher";
-import axiosJWT from "../../utils/axiosService";
 import { BsChatDots } from "react-icons/bs";
 
 const BookingDetails = () => {
   const [booking, setBooking] = useState<BookingInterface | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const { id } = useParams<{ id: string }>();
 
   const navigate = useNavigate();
 
   const { data, isError: error } = useFetchData<BookingResponse>(`${USER_API}/bookingdetails/${id}`);
-  console.log(data, "..............bookings........");
 
   useEffect(() => {
     if (data) {
-      setBooking(data.data); // Adjusted to use data.data
+      setBooking(data.data); 
     }
   }, [data]);
 
@@ -29,24 +24,20 @@ const BookingDetails = () => {
     console.error("Error fetching booking:", error);
     return <div>Error fetching booking details.</div>;
   }
-console.log(booking,"...........&&&&&&&&&&&&&&&&&&&&&&&&&")
   if (!data) {
     return <div>Loading...</div>;
   }
 
 
   const handleChat = () => {
-    console.log(booking,"........33333333333333333333333333333333333333333333333")
 
-    console.log(booking?.userId._id,"........userid")
-    console.log( booking?.hotelId.ownerId,"........ownerId......")
     axios
       .post(CHAT_API + `/conversations`, {
         senderId: booking?.userId._id,
         recieverId: booking?.hotelId.ownerId,
       })
-      .then(({ data }) => {
-        console.log(data, "dataaaaaaaa");
+      .then(() => {
+       
         navigate("/owner/chat");
       })
       .catch(() => {

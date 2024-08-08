@@ -1,4 +1,3 @@
-import React from "react";
 import { useFormik } from "formik";
 import { useNavigate, useParams } from "react-router-dom";
 import showToast from "../../utils/toast";
@@ -41,7 +40,7 @@ const ResetPassword = () => {
     <div
       className="h-screen w-screen flex justify-center items-center"
       style={{
-        backgroundImage: `url(${mal3})`, // Adjust the path
+        backgroundImage: `url(${mal3})`, 
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

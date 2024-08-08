@@ -38,7 +38,7 @@ const Chat: React.FC = () => {
         );
 
         updatedConversations.sort((a, b) => {
-          if (!a.lastMessage || !b.lastMessage) return 0; // Check for undefined
+          if (!a.lastMessage || !b.lastMessage) return 0;
           return (
             new Date(b.lastMessage.createdAt).getTime() -
             new Date(a.lastMessage.createdAt).getTime()
@@ -63,7 +63,7 @@ const Chat: React.FC = () => {
         );
 
         updatedConversations.sort((a, b) => {
-          if (!a.lastMessage || !b.lastMessage) return 0; // Check for undefined
+          if (!a.lastMessage || !b.lastMessage) return 0; 
           return (
             new Date(b.lastMessage.createdAt).getTime() -
             new Date(a.lastMessage.createdAt).getTime()
@@ -88,7 +88,6 @@ const Chat: React.FC = () => {
         );
         const conversationData = response.data;
 
-        // Fetch the last message for each conversation
         const updatedConversations = await Promise.all(
           conversationData.map(async (conversation: any) => {
             const messagesResponse = await axiosJWT.get(
@@ -101,7 +100,7 @@ const Chat: React.FC = () => {
         );
 
         updatedConversations.sort((a, b) => {
-          if (!a.lastMessage || !b.lastMessage) return 0; // Check for undefined
+          if (!a.lastMessage || !b.lastMessage) return 0; 
           return (
             new Date(b.lastMessage.createdAt).getTime() -
             new Date(a.lastMessage.createdAt).getTime()
@@ -135,12 +134,11 @@ const Chat: React.FC = () => {
   const handleConversationClick = async (conversation: any) => {
     setCurrentChat(conversation);
 
-    // Fetch receiver details
     const id = conversation.members.find((member: any) => member !== user.id);
 
     try {
       const response = await axiosJWT.get(`${USER_API}/OwnerDetails/${id}`);
-      setReceiverData(response.data.Hotel); // Assuming the profile picture URL is stored in `profilePicture`
+      setReceiverData(response.data.Hotel); 
     } catch (error) {
       console.error("Error fetching receiver details:", error);
     }
@@ -157,7 +155,7 @@ const Chat: React.FC = () => {
       );
 
       updatedConversations.sort((a, b) => {
-        if (!a.lastMessage || !b.lastMessage) return 0; // Check for undefined
+        if (!a.lastMessage || !b.lastMessage) return 0; 
         return (
           new Date(b.lastMessage.createdAt).getTime() -
           new Date(a.lastMessage.createdAt).getTime()
@@ -199,7 +197,7 @@ const Chat: React.FC = () => {
         );
 
         updatedConversations.sort((a, b) => {
-          if (!a.lastMessage || !b.lastMessage) return 0; // Check for undefined
+          if (!a.lastMessage || !b.lastMessage) return 0;
           return (
             new Date(b.lastMessage.createdAt).getTime() -
             new Date(a.lastMessage.createdAt).getTime()

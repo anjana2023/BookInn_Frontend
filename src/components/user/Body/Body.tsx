@@ -4,14 +4,6 @@ import SearchBoxUser from "../searchBox";
 import useUserHotels from "../../../hooks/user/useUserHotel";
 
 const Body: React.FC = () => {
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-  
-    rendererSettings: {
-      preserveAspectRatio: "xMidYMid slice"
-    }
-  };
 
   const {
     handleSearch,
@@ -19,10 +11,8 @@ const Body: React.FC = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <div className="bg-gradient-to-r from-orange-500 to-blue-500 py-12 flex flex-col items-center justify-center text-center text-white relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-20">
-          {/* <Lottie options={defaultOptions} height="100%" width="100%" /> */}
-        </div>
+      <div className="bg-gradient-to-r from-orange-700 to-blue-500 py-12 flex flex-col items-center justify-center text-center text-white relative overflow-hidden">
+      
         <div className="relative z-10 max-w-4xl px-4">
           <h1 className="text-4xl md:text-4xl font-semibold mb-4 animated-text">
             Discover the Best Properties with <span className="text-yellow-300">BookInn</span>

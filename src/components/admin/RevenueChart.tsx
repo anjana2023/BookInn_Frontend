@@ -3,60 +3,16 @@ import { Card, CardContent, Typography } from "@mui/material";
 import Chart from "react-apexcharts";
 import axiosJWT from "../../utils/axiosService";
 import { ADMIN_API } from "../../constants";
-
-// Define the type for the chart data
-interface ChartData {
-  series: { name: string; data: number[] }[];
-  options: {
-    chart: {
-      toolbar: { show: boolean };
-      height: number;
-    };
-    title: { show: boolean };
-    dataLabels: { enabled: boolean };
-    colors: string[];
-    stroke: { lineCap: string; curve: "smooth" | "straight" | "stepline" | "linestep" | "monotoneCubic" };
-    markers: { size: number };
-    xaxis: {
-      axisTicks: { show: boolean };
-      axisBorder: { show: boolean };
-      labels: {
-        style: {
-          colors: string;
-          fontSize: string;
-          fontFamily: string;
-          fontWeight: number;
-        };
-      };
-      categories: string[];
-    };
-    yaxis: {
-      labels: {
-        style: {
-          colors: string;
-          fontSize: string;
-          fontFamily: string;
-          fontWeight: number;
-        };
-      };
-    };
-    grid: {
-      show: boolean;
-      borderColor: string;
-      strokeDashArray: number;
-      xaxis: { lines: { show: boolean } };
-      padding: { top: number; right: number };
-    };
-    fill: { opacity: number; type: string; gradient: { shade: string; type: string; shadeIntensity: number; gradientToColors: string[]; inverseColors: boolean; opacityFrom: number; opacityTo: number; stops: number[] } };
-    tooltip: { theme: string };
-  };
-}
+import { ApexOptions } from "apexcharts";
 
 const RevenueChart: React.FC = () => {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<any>(null);
 
-  const [chartData, setChartData] = useState<ChartData>({
+  const [chartData, setChartData] = useState<{
+    series: { name: string; data: number[] }[];
+    options: ApexOptions;
+  }>({
     series: [
       {
         name: "Revenue",
@@ -71,15 +27,15 @@ const RevenueChart: React.FC = () => {
         height: 200,
       },
       title: {
-        show: false,
+        text: "",
       },
       dataLabels: {
         enabled: false,
       },
-      colors: ["#00BFFF", "#00CED1"], // Define gradient colors
+      colors: ["#00BFFF", "#00CED1"],
       stroke: {
-        lineCap: "round",
         curve: "smooth",
+        lineCap: "round" as "round" | "square" | "butt", // Cast to the appropriate type
       },
       markers: {
         size: 0,
@@ -126,12 +82,12 @@ const RevenueChart: React.FC = () => {
         },
       },
       fill: {
-        type: "gradient", // Set fill type to gradient
+        type: "gradient",
         gradient: {
           shade: "light",
-          type: "vertical", // You can use "horizontal" or "vertical"
+          type: "vertical",
           shadeIntensity: 0.5,
-          gradientToColors: ["#00CED1"], // Second gradient color
+          gradientToColors: ["#00CED1"],
           inverseColors: false,
           opacityFrom: 0.8,
           opacityTo: 0.4,
@@ -148,7 +104,6 @@ const RevenueChart: React.FC = () => {
     const fetchData = async () => {
       try {
         const response = await axiosJWT.get(`${ADMIN_API}/bookings`);
-        console.log(response.data, "///response data////");
         setData(response.data);
       } catch (err) {
         setError(err);
@@ -161,27 +116,20 @@ const RevenueChart: React.FC = () => {
 
   useEffect(() => {
     if (data) {
-      console.log("Processing data:", data);
       const now = new Date();
       const currentYear = now.getFullYear();
-
-      // Array to hold total platform fee for each month of the current year
       const monthlyPlatformFee = Array(12).fill(0);
 
       data.result.forEach((booking: any) => {
         const bookingDate = new Date(booking.createdAt);
         if (bookingDate.getFullYear() === currentYear) {
-          const month = bookingDate.getMonth(); // getMonth() returns month (0-11)
+          const month = bookingDate.getMonth();
           const platformFee = parseFloat(booking.platformFee);
           if (!isNaN(platformFee)) {
             monthlyPlatformFee[month] += platformFee;
-          } else {
-            console.warn(`Invalid platformFee for booking: ${booking}`);
           }
         }
       });
-
-      console.log("Monthly Platform Fee:", monthlyPlatformFee);
 
       const categories = [
         "Jan",

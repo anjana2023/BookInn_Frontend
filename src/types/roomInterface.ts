@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 
 export interface RoomInterface {
   _id: string;
@@ -7,7 +6,7 @@ export interface RoomInterface {
   maxAdults: number;
   maxChildren: number;
   desc: string;
-  roomNumbers: number[];  // roomNumbers as array of numbers
+  roomNumbers: number[];  
   createdAt: Date;
   updatedAt: Date;
 }

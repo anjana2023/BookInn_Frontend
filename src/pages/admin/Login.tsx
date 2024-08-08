@@ -23,10 +23,9 @@ const LoginForm: React.FC = () => {
         axios
           .post(ADMIN_API + "/login", { email, password })
           .then(({ data }) => {
-            const { message, access_token, refresh_token } = data;
+            const {  access_token, refresh_token } = data;
             const { name, role } = data.admin;
-            console.log(access_token);
-            console.log(name, role);
+          
             setItemToLocalStorage('access_token', access_token); 
             setItemToLocalStorage("refresh_token",refresh_token)
             showToast(data.message, "success");
@@ -34,7 +33,7 @@ const LoginForm: React.FC = () => {
             navigate("/admin");
           })
           .catch(({ response }) => {
-            console.log(response);
+           
             showToast(response?.data?.message, "error");
           });
       },

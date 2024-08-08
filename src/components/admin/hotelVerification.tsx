@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // Import useHistory hook
 
 import { ADMIN_API } from '../../constants';
@@ -19,6 +19,7 @@ const   HotelVerificationPage = () => {
   
     useEffect(() => {
       const fetchHotelDetails = async () => {
+        
         try {
           const { data } = await axiosJWT.get(`${ADMIN_API}/hotelDetails/${id}`);        
           setHotel(data.Hotel);
@@ -50,8 +51,7 @@ const   HotelVerificationPage = () => {
     
       const handleRejectConfirm = async () => {
         try {
-          const response = await axiosJWT.patch(`${ADMIN_API}/verify_hotel_rejection/${id}`, { status: 'rejected', reason: rejectionReason });
-          console.log(response.data.message);
+          await axiosJWT.patch(`${ADMIN_API}/verify_hotel_rejection/${id}`, { status: 'rejected', reason: rejectionReason });
           setShowModal(false);
           navigate('/admin/hotels');
         } catch (error) {
@@ -59,8 +59,13 @@ const   HotelVerificationPage = () => {
         }
       };
     
-
-
+      if (loading) {
+        return <div>Loading...</div>; 
+      }
+  
+      if (error) {
+        return <div>{error}</div>; 
+      }
 
   return(
     <div className="flex justify-center items-center mt-10">

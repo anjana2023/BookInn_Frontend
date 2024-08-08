@@ -1,4 +1,3 @@
-import React from "react";
 import { useFormik } from "formik";
 import showToast from "../../utils/toast";
 import axios from "axios";
@@ -19,7 +18,7 @@ const ForgotPassword = () => {
             showToast(data.message, "success");
           })
           .catch((response) => {
-            console.log(response);
+           
             showToast(response.message, "error");
           });
       },

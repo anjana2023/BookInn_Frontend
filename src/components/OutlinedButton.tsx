@@ -1,23 +1,30 @@
-import React from "react"
-import { Button } from "react-bootstrap"
+import React from 'react';
+import { Button } from 'react-bootstrap';
 
-const OutlinedButton = ({ text, onclick, color }) => {
+interface OutlinedButtonProps {
+  text: string; 
+  onclick: () => void; 
+  color?: string; 
+}
+
+const OutlinedButton: React.FC<OutlinedButtonProps> = ({ text, onclick, color }) => {
   const handleClick = () => {
-    onclick()
-  }
+    onclick();
+  };
+
   return (
     <div>
       <Button
         size="sm"
-      onClick={handleClick}
-        color={color}
-        variant="outlined"
+        onClick={handleClick}
+        style={{ color }} 
+        variant="outline" 
         className="flex items-center gap-3"
       >
         {text}
       </Button>
     </div>
-  )
-}
+  );
+};
 
-export default OutlinedButton
+export default OutlinedButton;

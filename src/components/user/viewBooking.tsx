@@ -4,18 +4,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { CHAT_API, USER_API } from "../../constants";
 import showToast from "../../utils/toast";
-import React from "react";
 import { BookingInterface, BookingResponse } from "../../types/hotelInterface";
 import { fetcher } from "../../utils/fetcher";
 import axiosJWT from "../../utils/axiosService";
 import AddReview from "../../components/AddReview";
 import { useAppSelector } from "../../redux/store/store";
-import { MessageCircleMore } from "lucide-react";
 import { BsChatDots } from "react-icons/bs";
 import  starImg from "../../assets/images/stars.jpg";
 
 import axios from "axios";
-// ... other imports
 
 const BookingDetails = () => {
   const [booking, setBooking] = useState<BookingInterface | null>(null);
@@ -24,7 +21,6 @@ const BookingDetails = () => {
   const user = useAppSelector((state) => state.userSlice);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const navigate = useNavigate();
-  const [showTooltip, setTooltip] = useState<boolean>(false);
   const { data, error } = useSWR<BookingResponse>(
     `${USER_API}/bookingdetails/${id}`,
     fetcher
@@ -32,15 +28,15 @@ const BookingDetails = () => {
 
   useEffect(() => {
     if (data) {
-      console.log("Fetched Data$$$$$$$$$$$$$$$$$$$$$:", data); // Check the structure of data
-      setBooking(data.data); // Ensure data.data contains booking details
+      
+      setBooking(data.data); 
     }
   }, [data]);
 
   useEffect(() => {}, [booking]);
 
   if (error) {
-    console.error("Error fetching booking:", error);
+ 
     return <div>Error fetching booking details.</div>;
   }
 
@@ -71,13 +67,11 @@ const BookingDetails = () => {
         { reason, status: "cancelled" }
       );
 
-      // Update the booking status locally
       setBooking((prevBooking) => ({
         ...prevBooking!,
         status: response.data.booking.status ?? prevBooking?.status,
       }));
 
-      // Refetch booking details to ensure the updated data is displayed
       mutate(`${USER_API}/bookingdetails/${id}`);
 
       showToast("Booking cancelled successfully", "success");
@@ -91,12 +85,11 @@ const BookingDetails = () => {
     setShowReviewModal(true);
   };
 
-  console.log("Booking State.............................:", booking); // Check the booking state after update
 
   const canCancelBooking =
     booking &&
     booking.paymentStatus !== "Refunded" &&
-    (booking.status === "pending" || booking.status === "booked");
+    (booking.status === "pending" || booking.status === "booked" || booking.paymentMethod === "Wallet");
 
   return (
     <div className="w-screen h-fit overflow-hidden flex justify-center">
@@ -247,7 +240,7 @@ const BookingDetails = () => {
               <CancelBookingModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                onSubmit={handleCancellation}
+                onConfirm={handleCancellation}
               />
             )}
           </div>

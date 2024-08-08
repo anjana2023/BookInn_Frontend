@@ -14,7 +14,6 @@ const useDashboard = () => {
   const fetchBookings = async () => {
     try {
       const response = await axiosJWT.get(`${ADMIN_API}/bookings`);
-      console.log("Booking response:", response.data);
       setBooking(response.data);
     } catch (error) {
       console.error("Error fetching bookings:", error);
@@ -42,7 +41,6 @@ const useDashboard = () => {
   const fetchOwners = async () => {
     try {
       const response = await axiosJWT.get(`${ADMIN_API}/owners`);
-      console.log("Owner response:", response.data);
       setOwnerData(response.data);
     } catch (error) {
       console.error("Error fetching owners:", error);
@@ -76,9 +74,7 @@ const useDashboard = () => {
 
   if (booking) {
     Revenue = booking.result.reduce((acc: number, curr: any) => {
-      console.log("Current booking:", curr); // Log current booking
       const platformFee = parseFloat(curr.platformFee);
-      console.log("Parsed platformFee:", platformFee); // Log parsed platformFee
       if (!isNaN(platformFee)) {
         return acc + platformFee;
       } else {
@@ -86,7 +82,6 @@ const useDashboard = () => {
         return acc;
       }
     }, 0);
-    console.log("Calculated Revenue:", Revenue);
   }
 
   const userCount = userData?.users?.length || "0";

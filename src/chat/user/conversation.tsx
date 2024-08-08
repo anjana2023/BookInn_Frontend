@@ -23,9 +23,7 @@ const Conversation: React.FC<ConversationProps> = ({ conversation, lastMessage }
         const fetchDoctorData = async () => {
             try {
                 const ownerid = conversation.members[1];
-                console.log(ownerid,"//////////////////")
                 const response = await axiosJWT.get(`${USER_API}/OwnerDetails/${ownerid}`);
-                console.log(response?.data,"!!!!!!!!!$$$$$$$$$$$$$$$$$$^^^^^^^^^^^^0000000000000000^^^^^")
                 setOwnerData(response.data.Hotel);
             } catch (error) {
                 console.error("Error fetching doctor data:", error);
@@ -35,7 +33,6 @@ const Conversation: React.FC<ConversationProps> = ({ conversation, lastMessage }
         fetchDoctorData();
     }, [conversation]);
 
-    console.log(ownerData,"checkinggggggggggggggggggggggggggggggggggg");
 
     
 

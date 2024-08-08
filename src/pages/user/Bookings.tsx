@@ -1,4 +1,3 @@
-import React from "react";
 import Navbar from "../../components/user/NavBar/Navbar";
 import ProfileSidebar from "../../components/user/ProfileSidebar";
 import { Outlet } from "react-router-dom";

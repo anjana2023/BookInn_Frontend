@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/reducer/reducer";
-import { Range } from "react-range";
+
 import { useNavigate } from "react-router-dom";
 import { Formik, Field, Form } from "formik";
-import axios from "axios";
+
 import { useAppDispatch, useAppSelector } from "../../redux/store/store";
 import { setData } from "../../redux/slices/searchingSlice";
 import useHotelsUser from "../../hooks/user/useHotel";
 import SearchBoxUser from "../../components/user/searchBox";
 
-const STEP = 100;
+
 const MIN = 0;
 const MAX = 100000;
 
@@ -34,7 +34,7 @@ const Hotels: React.FC = () => {
   }, [loading]);
 
   const [active, setActive] = useState(1);
-  const resultsPerPage = 10; // Assuming 10 results per page
+  const resultsPerPage = 10; 
   const totalPages = Math.ceil(searchResults.length / resultsPerPage);
 
   const next = () => {
@@ -102,7 +102,7 @@ const Hotels: React.FC = () => {
             }}
             onSubmit={async (values) => {
               setLocalLoading(true);
-              console.log("Budget Values Submitted: ", values.budget); // Debugging log
+              
               await dispatch(
                 setData({
                   budget: { min: values.budget[0], max: values.budget[1] },
@@ -111,44 +111,12 @@ const Hotels: React.FC = () => {
               );
             }}
           >
-            {({ values, setFieldValue }) => (
+            {() => (
               <Form className="flex-1 bg-gray-100 p-3 rounded-md sticky top-20 h-fit">
                 <h1 className="text-lg text-gray-700 mb-2 font-bold">
                   Filter by:
                 </h1>
-                {/* <div className="mb-4 border p-4 rounded-lg">
-                  <h2 className="text-sm font-medium text-gray-700">
-                    Your budget (per night)
-                  </h2>
-                  <div className="py-4">
-                    <Range
-                      step={STEP}
-                      min={MIN}
-                      max={MAX}
-                      values={values.budget}
-                      onChange={(budget) => setFieldValue("budget", budget)}
-                      renderTrack={({ props, children }) => (
-                        <div
-                          {...props}
-                          className="w-full h-1 bg-gray-300 rounded-lg"
-                        >
-                          {children}
-                        </div>
-                      )}
-                      renderThumb={({ props }) => (
-                        <div
-                          {...props}
-                          className="w-5 h-5 bg-blue-600 rounded-full"
-                        />
-                      )}
-                    />
-                  </div>
-
-                  <div className="flex justify-between mt-2 text-sm text-gray-600">
-                    <span>₹ {values.budget[0]}</span>
-                    <span>₹ {values.budget[1]}+</span>
-                  </div>
-                </div> */}
+            
                 <div className="mb-4 border p-4 rounded-lg">
                   <h2 className="text-sm font-medium text-gray-700">
                     Amenities
@@ -199,7 +167,7 @@ const Hotels: React.FC = () => {
           {paginatedResults.length > 0 ? (
             paginatedResults.map((hotel) => (
               <div
-                key={hotel._id}
+                key={hotel._id.toString()}
                 className="flex flex-col p-4 min-w-full my-4 rounded-lg bg-white shadow-md md:max-w-xl md:flex-row transform transition-transform hover:scale-105 hover:shadow-md hover:bg-varGray"
                 onClick={() => handleClick(hotel._id.toString())}
               >

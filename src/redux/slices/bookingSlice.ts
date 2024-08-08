@@ -8,8 +8,8 @@ interface Room {
 
 interface SearchingState {
   name: string;
-  checkIn: string; // ISO date string
-  checkOut: string; // ISO date string
+  checkIn: string; 
+  checkOut: string; 
   adults: number;
   children: number;
   price: number;
@@ -20,8 +20,8 @@ interface SearchingState {
   pincode: string;
   country: string;
   hotelId: string;
-  rooms: Room[]; // Array of Room objects
-  totalDays: number; // Add a property to store the total number of days
+  rooms: Room[]; 
+  totalDays: number;
 }
 
 const initialState: SearchingState = {
@@ -39,7 +39,7 @@ const initialState: SearchingState = {
   country: "",
   hotelId: "",
   rooms: [],
-  totalDays: 0, // Initialize with 0
+  totalDays: 0, 
 };
 
 const calculateTotalDays = (checkIn: string, checkOut: string): number => {
@@ -47,7 +47,7 @@ const calculateTotalDays = (checkIn: string, checkOut: string): number => {
   const endDate = new Date(checkOut);
   const timeDifference = endDate.getTime() - startDate.getTime();
   const dayDifference = timeDifference / (1000 * 3600 * 24);
-  return dayDifference + 1; // Including both start and end dates
+  return dayDifference + 1;
 };
 
 const bookingSlice = createSlice({

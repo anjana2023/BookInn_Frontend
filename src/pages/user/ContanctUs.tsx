@@ -1,7 +1,6 @@
 
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import emailjs from '@emailjs/browser';
-import aboutimg from '../../assets/images/about1.png';
 import Footer from '../../components/user/Footer/Footer';
 import Navbar from '../../components/user/NavBar/Navbar';
 
@@ -31,9 +30,9 @@ const ContactSection: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const [msg, setMsg] = useState<string>(''); // State to hold success or error messages
-  const [msgType, setMsgType] = useState<'success' | 'error' | ''>(''); // State to hold message type
-  const [isLoading, setIsLoading] = useState<boolean>(false); // State to handle loading indicator
+  const [msg, setMsg] = useState<string>(''); 
+  const [msgType, setMsgType] = useState<'success' | 'error' | ''>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false); 
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -87,16 +86,15 @@ const ContactSection: React.FC = () => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
-      setIsLoading(true); // Show loading indicator
-      // Your EmailJS service ID, template ID, and Public Key
-      const serviceId = 'service_01i75zk'; // YOUR_SERVICE_ID
-      const templateId = 'template_6b4et5d'; // YOUR_TEMPLATE_ID
-      const publicKey = '1hQGu4XO57uQgBttm'; // YOUR_PUBLIC_KEY
+      setIsLoading(true); 
 
-      // Destructure formData for EmailJS templateParams
+      const serviceId = 'service_01i75zk'; 
+      const templateId = 'template_6b4et5d'; 
+      const publicKey = '1hQGu4XO57uQgBttm'; 
+
       const { name, email, mobilenumber, subject, message } = formData;
 
-      // Create a new object that contains dynamic template params
+     
       const templateParams = {
         name: name,
         email: email,
@@ -105,10 +103,9 @@ const ContactSection: React.FC = () => {
         message: message,
       };
 
-      // Send the email using EmailJS
+   
       emailjs.send(serviceId, templateId, templateParams, publicKey)
-        .then((response) => {
-          console.log('Email sent successfully!', response);
+        .then(() => {
           setMsgType('success');
           setMsg('Message sent successfully!');
           
@@ -124,8 +121,8 @@ const ContactSection: React.FC = () => {
             setMsg('');
             setMsgType('');
             
-          }, 3000); // Clear the message after 3 seconds
-          setIsLoading(false); // Hide loading indicator
+          }, 3000); 
+          setIsLoading(false); 
         })
         .catch((error) => {
           console.error('Error sending email:', error);
@@ -135,8 +132,8 @@ const ContactSection: React.FC = () => {
             setMsg('');
             setMsgType('');
             
-          }, 3000); // Clear the message after 3 seconds
-          setIsLoading(false); // Hide loading indicator
+          }, 3000); 
+          setIsLoading(false); 
         });
     }
   };

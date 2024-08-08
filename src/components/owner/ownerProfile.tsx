@@ -1,4 +1,3 @@
-import React from "react";
 import useOwnerProfile from "../../hooks/owner/OwnerProfile";
 
 const OwnerProfile = () => {

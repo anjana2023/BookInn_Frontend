@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactStars from "react-rating-stars-component";
 import uploadImagesToCloudinary from "../api/imageUpload";
-import axios from "axios";
 import { USER_API } from "../constants";
 import showToast from "../utils/toast";
 import axiosJWT from "../utils/axiosService";
@@ -19,7 +18,6 @@ const AddReview: React.FC<ModalProps> = ({ isOpen, onClose, id }) => {
   const [descriptionError, setDescriptionError] = useState(false);
   const [ratingError, setRatingError] = useState(false);
   const [uploading, setUploading] = useState(false);
-  console.log(id, "hotel id..........................");
 
   const modalRef = useRef<HTMLDivElement>(null);
 

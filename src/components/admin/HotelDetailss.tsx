@@ -1,18 +1,10 @@
 import React from "react";
 import useHotelDetails from "../../hooks/admin/useHotelDetails";
-import { useNavigate, useParams } from "react-router-dom";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { useDispatch } from "react-redux";
-// import { setData } from "../../redux/slices/bookingslice"
+import {  useParams } from "react-router-dom";
+
+
 
 const HotelDetail: React.FC = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const today = new Date().toISOString().split("T")[0];
-  const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1))
-    .toISOString()
-    .split("T")[0];
 
   const { id } = useParams<{ id: string }>();
 
@@ -32,20 +24,11 @@ const HotelDetail: React.FC = () => {
     place,
     description,
     amenities,
-    status,
-    room,
-    guests: maxGuests,
-    stayType,
-    address,
-    unavailbleDates: unavailableDatesRaw,
+   
     hotelDocument,
   } = hotel;
 
   // Convert unavailable dates to ISO format, if they exist
-  const unavailableDates =
-    unavailableDatesRaw?.map(
-      (date) => new Date(date).toISOString().split("T")[0]
-    ) || [];
 
     const isImage = (url: string) => {
       return /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
@@ -108,7 +91,33 @@ const HotelDetail: React.FC = () => {
       <div className="flex flex-col md:flex-row">
         <div className="w-full">
           <h1 className="text-3xl font-bold mb-2">{name}</h1>
-          <p className="text-gray-700 mb-2">{room} room.</p>
+          <div className="mb-4 col-span-2">
+        <h3 className="text-xl font-semibold text-gray-800 py-2">
+          Room Details
+        </h3>
+        <table className="min-w-full bg-white">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="text-left py-3 px-4">Room</th>
+              <th className="text-left py-3 px-4">Description</th>
+              <th className="text-left py-3 px-4">max Adults</th>
+              <th className="text-left py-3 px-4">max Children</th>
+              <th className="text-left py-3 px-4">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {hotel?.rooms.map(room => (
+              <tr className="border-b">
+                <td className="py-3 px-4">{room.title}</td>
+                <td className="py-3 px-4">{room.desc}</td>
+                <td className="py-3 px-4">{room.maxAdults}</td>
+                <td className="py-3 px-4">{room.maxChildren}</td>
+                <td className="py-3 px-4">{room.price}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
           <p className="text-gray-600 mb-2">{place}</p>
           <div className="flex items-center mb-2">
             <span className="inline-block bg-yellow-500 text-white px-2 py-1 rounded-full text-sm font-semibold mr-2">

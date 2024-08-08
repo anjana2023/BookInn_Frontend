@@ -1,4 +1,4 @@
-//src/utils/axios
+
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { TOKEN_API } from "../constants";
@@ -14,14 +14,7 @@ const getNewAccessToken = async () => {
     const { data } = await axios.post(TOKEN_API + "/refresh_token", {
       refresh_token,
     });
-    // console.log(data,'.............................data new accesstoken')
-    // store.dispatch(
-    //   setTokens({
-    //     access_token: data.access_token,
-    //     refresh_token,
-    //   })
-    // );
-    // access_token = data.access_token;
+  
     return data?.access_token;
   } catch (err) {
     logout("Session expired ,please Login");
@@ -67,9 +60,8 @@ axiosJWT.interceptors.request.use(async (config) => {
   
       accessToken = await getAccessToken() as string
      
-      // accessToken = access_token
+     
       decodedToken = await jwtDecode(accessToken);
-      console.log(decodedToken,"decodedToken")
     } catch (error) {
       console.log("error in decodeToken" + error);
     }

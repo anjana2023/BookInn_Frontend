@@ -1,10 +1,10 @@
 import { useState, useCallback, useEffect } from "react"
 import Modal from "react-modal"
-import { Accept, DropEvent, FileRejection, useDropzone } from "react-dropzone"
+import { Accept,useDropzone } from "react-dropzone"
 import { FaTrashAlt } from "react-icons/fa"
 import uploadImagesToCloudinary from "../../api/imageUpload"
 import PulseLoader from "react-spinners/PulseLoader"
-import React from "react"
+
 
 type PhotoUploadModalProps = {
   isOpen: boolean
@@ -35,8 +35,7 @@ const PhotoUploadModal = ({
   const onDrop = useCallback(
     (
       acceptedFiles: File[],
-      fileRejections: FileRejection[],
-      event: DropEvent
+     
     ) => {
      
 
@@ -80,7 +79,6 @@ const PhotoUploadModal = ({
       onClose()
     }
   }
-  console.log(selectedFiles,"..............pdfs an images")
 
   const renderPreviews = () => (
     <div className="grid grid-cols-2 gap-4 mt-4">

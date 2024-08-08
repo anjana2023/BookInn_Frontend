@@ -28,23 +28,11 @@ const useOwnerProfile = () => {
   useEffect(() => {
     axiosJWT
       .get(OWNER_API + "/profile")
-      // .then(({ data }) => {
-      //   console.log('then..................',data);
-      //   const { owner } = data.user;
-      //   setProfile(owner);
-      //   console.log('ownerrrrrrrr',owner);
-      //   setFormData((prev) => ({
-      //     ...prev,
-      //     name: owner?.name || "",
-      //     email: owner?.email || "",
-      //     phone: owner?.phoneNumber || "",
-      //   }));
-      // })
+    
       .then(({data})=>{
       
         if(data.success){
           const owner=data.user
-          console.log('Owner here',owner);
           setProfile(owner);
           setFormData((prev) => ({
             ...prev,
@@ -64,7 +52,6 @@ const useOwnerProfile = () => {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    console.log(name,"-----------",value);
 
     if (name === "imageFile") {
         const fileInput = e.target as HTMLInputElement;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // Importing the arrow icons
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; 
 import useHotelDetails from "../../hooks/user/useHotelDetails";
 import useUserHotels from "../../hooks/user/useUserHotel";
 
@@ -10,7 +10,7 @@ interface HotelDataProps {
   name: string;
   place: string;
   stayType: string;
-  price: number; // Price will be removed from display, but keep it in props
+  price?: number; 
 }
 
 const HotelData: React.FC<HotelDataProps> = ({ _id, imageUrls, name, place, stayType }) => {
@@ -49,7 +49,7 @@ const HotelData: React.FC<HotelDataProps> = ({ _id, imageUrls, name, place, stay
               <li>Error loading amenities</li>
             ) : hotel?.amenities?.length > 0 ? (
               <>
-                {hotel.amenities.slice(0, showMore ? undefined : 3).map((amenity, index) => (
+                {hotel.amenities.slice(0, showMore ? undefined : 3).map((amenity:any, index:any) => (
                   <li key={index} className="text-sm">{amenity}</li>
                 ))}
                 {hotel.amenities.length > 3 && (
@@ -107,11 +107,23 @@ const HomePage: React.FC = () => {
             : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
         }`}
       >
-        {currentHotels.length > 0 ? (
-          currentHotels.map((hotel) => <HotelData key={hotel._id} {...hotel} />)
-        ) : (
-          <p className="text-center text-gray-500">No approved hotels available</p>
-        )}
+       {currentHotels.length > 0 ? (
+  currentHotels.map((hotel) => (
+    <HotelData
+      key={hotel._id.toString()} // Convert ObjectId to string for the key
+      {...{
+        _id: hotel._id.toString(), // Convert ObjectId to string
+        imageUrls: hotel.imageUrls,
+        name: hotel.name,
+        place: hotel.place,
+        stayType: hotel.stayType,
+      }}
+    />
+  ))
+) : (
+  <p className="text-center text-gray-500">No approved hotels available</p>
+)}
+
       </div>
       {totalPages > 1 && (
         <div className="flex justify-between items-center mt-6">

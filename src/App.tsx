@@ -6,7 +6,6 @@ import './App.css'
 import store,{persistor} from './redux/store/store'
 import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
-import React from 'react'
 import { MainRouter } from './routes'
 import SocketProvider from './redux/Context/SocketContext'
 

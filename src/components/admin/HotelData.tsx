@@ -137,8 +137,8 @@ const Hotels: React.FC = () => {
             {currentHotels.length > 0 ? (
               currentHotels.map((hotel: HotelInterface) => (
                 <HotelData
-                  key={hotel._id}
-                  _id={hotel._id}
+                  key={hotel._id.toString()}
+                  _id={hotel._id.toString()}
                   image={hotel.imageUrls[1]}
                   name={hotel.name}
                   place={hotel.place}

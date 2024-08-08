@@ -4,9 +4,7 @@ import { Button } from "flowbite-react";
 import { useNavigate, Link } from "react-router-dom";
 import { HotelInterface } from "../../types/hotelInterface";
 import ReactPaginate from "react-paginate";
-import axiosJWT from "../../utils/axiosService";
-import { OWNER_API } from "../../constants";
-import toast from "react-hot-toast";
+
 
 interface HotelDataProps {
   _id: string;
@@ -17,33 +15,15 @@ interface HotelDataProps {
   isBlocked: boolean; // Include isBlocked in props
 }
 
-const HotelData: React.FC<HotelDataProps> = ({ _id, image, name, place, status, isBlocked }) => {
+const HotelData: React.FC<HotelDataProps> = ({ _id, image, name, status }) => {
   const navigate = useNavigate();
-  // const [showConfirm, setShowConfirm] = useState<boolean>(false);
-  // const [isChecked, setIsChecked] = useState<boolean>(isBlocked);
+
 
   const handleClick = () => {
     navigate(`/admin/hotelDetails/${_id}`);
   };
 
-  // const handleCheckboxChange = () => {
-  //   setIsChecked(!isChecked);
-  //   axiosJWT
-  //     .patch(OWNER_API + `/block_hotel/${_id}`)
-  //     .then(() => {
-  //       toast.success(`Hotel ${!isChecked ? "blocked" : "unblocked"} successfully!`);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //       toast.error("An error occurred. Please try again.");
-  //     });
-  //   setShowConfirm(false);
-  // };
-
-  // const toggleConfirmDialog = () => {
-  //   setShowConfirm(!showConfirm);
-  // };
-
+ 
   return (
     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
       <td className="p-4">
@@ -114,13 +94,12 @@ const Hotels: React.FC = () => {
                 <tbody>
                   {currentItems.map((hotel: HotelInterface) => (
                     <HotelData
-                      key={hotel._id}
-                      _id={hotel._id}
+                      key={hotel._id.toString()}
+                      _id={hotel._id.toString()}
                       image={hotel.imageUrls[2]}
                       name={hotel.name}
                       place={hotel.place}
-                      status={hotel.status}
-                      // isBlocked={hotel.isBlocked} 
+                      status={hotel.status} isBlocked={false}   
                     />
                   ))}
                 </tbody>

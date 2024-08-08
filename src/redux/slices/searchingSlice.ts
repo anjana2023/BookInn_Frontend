@@ -1,10 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { addDays } from "date-fns"
 
-interface DateRange {
-  startDate: Date
-  endDate: Date
-}
+
 
 interface SearchOptions {
   adult: number

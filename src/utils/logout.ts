@@ -4,7 +4,6 @@ import { clearUser } from "../redux/slices/userSlice";
 import { clearOwner } from "../redux/slices/ownerSlice";
 
 const logout = (message: string, type: ToastType = "success"): void => {
-  console.log('hiii')
   store.dispatch(clearUser());
   showToast(message, type);
 };

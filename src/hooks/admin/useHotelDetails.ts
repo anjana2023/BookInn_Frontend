@@ -13,7 +13,7 @@ const useHotelDetails = (id: string) => {
       try {
         const { data } = await axiosJWT.get(`${ADMIN_API}/hotelDetails/${id}`);        
         setHotel(data.Hotel);
-        console.log(data,"//////////////////////////")
+       
       } catch (error) {
         setError("Failed to fetch hotel details");
         console.error(error);
@@ -24,7 +24,7 @@ const useHotelDetails = (id: string) => {
 
     fetchHotelDetails();
   }, [id]);
-  console.log(hotel,".............")
+
 
   return { hotel, loading, error };
 };

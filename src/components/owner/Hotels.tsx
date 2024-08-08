@@ -1,13 +1,12 @@
+
 import React, { useState } from "react";
 import useHotelList from "../../hooks/owner/UseHotelList";
 import { Button } from "flowbite-react";
-import { HotelInterface } from "../../types/hotelInterface";
 import { useNavigate } from "react-router";
 import axiosJWT from "../../utils/axiosService";
 import { OWNER_API } from "../../constants";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import showToast from "../../utils/toast";
 import { FaEdit, FaRedo } from "react-icons/fa";
 
 interface HotelDataProps {
@@ -21,6 +20,53 @@ interface HotelDataProps {
   handleClick: (id: string) => void;
 }
 
+const Pagination = ({
+  currentPage,
+  totalPages,
+  onPageChange,
+}: {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}) => {
+  const pages = [...Array(totalPages).keys()].map((num) => num + 1);
+
+  return (
+    <div className="flex justify-center space-x-2 mt-4">
+      <button
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className={`px-3 py-1 rounded-md ${
+          currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-gray-200"
+        }`}
+      >
+        Previous
+      </button>
+      {pages.map((page) => (
+        <button
+          key={page}
+          onClick={() => onPageChange(page)}
+          className={`px-3 py-1 rounded-md ${
+            page === currentPage ? "bg-blue-500 text-white" : "bg-gray-200"
+          }`}
+        >
+          {page}
+        </button>
+      ))}
+      <button
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className={`px-3 py-1 rounded-md ${
+          currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-gray-200"
+        }`}
+      >
+        Next
+      </button>
+    </div>
+  );
+};
+
+// HotelData Component
 const HotelData: React.FC<HotelDataProps> = ({
   _id,
   image,
@@ -31,7 +77,6 @@ const HotelData: React.FC<HotelDataProps> = ({
   rejectedReason,
   handleClick,
 }) => {
-  const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState<boolean>(isBlocked);
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
@@ -146,9 +191,22 @@ const HotelData: React.FC<HotelDataProps> = ({
   );
 };
 
+
 const Hotels: React.FC = () => {
   const { hotels, error } = useHotelList();
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hotelsPerPage] = useState(4); 
+
+  
+  const indexOfLastHotel = currentPage * hotelsPerPage;
+  const indexOfFirstHotel = indexOfLastHotel - hotelsPerPage;
+  const currentHotels = hotels.slice(indexOfFirstHotel, indexOfLastHotel);
+  const totalPages = Math.ceil(hotels.length / hotelsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   const handleClick = (id: string) => {
     navigate(`/owner/editHotel/${id}`);
@@ -161,11 +219,11 @@ const Hotels: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-10">
       <h1 className="text-3xl font-bold text-gray-800 text-center mb-8">Your Hotels</h1>
-      {hotels.length > 0 ? (
-        hotels.map((hotel) => (
+      {currentHotels.length > 0 ? (
+        currentHotels.map((hotel) => (
           <HotelData
-            key={hotel._id}
-            _id={hotel._id}
+            key={hotel._id.toString()}
+            _id={hotel._id.toString()}
             image={hotel.imageUrls[0]}
             name={hotel.name}
             place={hotel.place}
@@ -178,6 +236,11 @@ const Hotels: React.FC = () => {
       ) : (
         <p className="text-gray-600 text-center my-4">No hotels available</p>
       )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };

@@ -28,9 +28,9 @@ export interface RoomInterface {
 
 export type HotelInterface = {
   Hotel: any;
-  _id: mongoose.Types.ObjectId
-  name: string
-  ownerId:OwnerInterface
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  ownerId:OwnerInterface|null;
   place: string;
   email: string;
   imageUrls:string[];
@@ -94,6 +94,5 @@ export type BookingInterface={
 
 
 export interface BookingResponse {
-  data(data: any): unknown;
-  bookings: BookingInterface;
+  data: BookingInterface;
 }

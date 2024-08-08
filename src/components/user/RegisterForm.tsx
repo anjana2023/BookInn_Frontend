@@ -1,11 +1,10 @@
-import React from "react";
 import { useFormik } from "formik";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { RegisterValidation } from "../../utils/validation";
 import { USER_API } from "../../constants";
 import showToast from "../../utils/toast";
-import { getItemFromLocalStorage, setItemToLocalStorage } from "../../utils/localStorage";
+import {  setItemToLocalStorage } from "../../utils/localStorage";
 import mal3 from "../../../src/assets/images/mal3.jpg";
 
 const RegisterForm = () => {
@@ -31,12 +30,10 @@ const RegisterForm = () => {
       axios
         .post(USER_API + "/auth/register", { name, email, password, phone })
         .then(({ data }) => {
-          const { message, newUser } = data;
-          console.log(data);
+          const {  newUser } = data;
           showToast(data.message, "success");
           setTimeout(() => {
             setItemToLocalStorage("userId", newUser._id);
-            console.log('Stored userId:', getItemFromLocalStorage("userId"));
             navigate("/user/auth/verifyOtp");
           }, 1000);
         })

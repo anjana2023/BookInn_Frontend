@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import  { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useAppSelector } from "../../redux/store/store"
 import { Formik, Form, Field, ErrorMessage } from "formik"
@@ -6,13 +6,12 @@ import { loadStripe } from "@stripe/stripe-js"
 import * as Yup from "yup"
 
 import { USER_API } from "../../constants"
-import useSWR from "swr"
 import { UserWalletInterface } from "../../types/userInterface"
 import { useFetchData } from "../../utils/fetcher"
 import axiosJWT from "../../utils/axiosService"
 
 const formatDate = (dateString: string) => {
-  const { id } = useParams();
+
   const date = new Date(dateString)
   return date.toLocaleDateString("en-GB", {
     weekday: "short",
@@ -39,12 +38,10 @@ const CheckoutPage = () => {
   const [paymentMethod, setPaymentMethod] = useState("Online")
   const { id } = useParams<{ id: string }>()
   const bookingData = useAppSelector(state => state.bookingSlice)
-  console.log(bookingData, "bookingData...........")
-  const { data, isError:error } = useFetchData<any>(USER_API + "/profile")
-console.log(data,"///////////////////user")
+  const { data } = useFetchData<any>(USER_API + "/profile")
+
   useEffect(() => {
     if (data) {
-      console.log(data.user.wallet, "wallet")
       setWallet(data.user.wallet)
     }
   }, [data])
@@ -54,23 +51,22 @@ console.log(data,"///////////////////user")
 
   // Calculate total days
   const totalDays = Math.ceil(
-    (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)
+    (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)
   )
-  console.log(totalDays)
   
 
   const totalPrice =
-    totalDays *
-    bookingData.rooms.reduce(
-      (acc, item) => acc + item[1].count * item[1].price,
-      0
-    )
+  totalDays *
+  bookingData.rooms.reduce((acc: number, room: any) => {
+    if (room && room.count && room.price) {
+      return acc + room.count * room.price;
+    }
+    return acc; 
+  }, 0);
   const platformFee=totalPrice * 0.05
-  console.log(platformFee,"feeeee");
-  
-  console.log(totalPrice, "price")
+ 
   const amountToPay=platformFee+totalPrice
-  console.log(amountToPay,"fdsfsd");
+
   
 
   const formattedCheckInDate = formatDate(bookingData.checkIn)
@@ -80,7 +76,6 @@ console.log(data,"///////////////////user")
   const handleInputChange = (
     method: "Wallet" | "Online"
   ) => {
-    console.log(method, "argument")
 
     if (method === "Wallet") {
       if (amountToPay > (wallet?.balance ?? 0)) {
@@ -88,7 +83,6 @@ console.log(data,"///////////////////user")
       }
       setError(null)
 
-      console.log("wallet")
       setPaymentMethod("Wallet")
     }
     if (method === "Online") {
@@ -110,12 +104,11 @@ console.log(data,"///////////////////user")
 
       const roomDetails = bookingData.rooms.map((room: any) => {
         return {
-          roomId: room[0],
-          roomNumbers: room[1].roomNumbers.map(
-            (roomNumber: any) => roomNumber.number
-          ),
-        }
-      })
+          roomId: room.roomId, // Access the roomId directly
+          roomNumbers: room.roomNumbers.map((roomNumber: any) => roomNumber.number),
+        };
+      });
+      
       const data = {
         firstName: values.firstName,
         lastName: values.lastName,
@@ -132,18 +125,14 @@ console.log(data,"///////////////////user")
         totalDays: bookingData.totalDays,
         paymentMethod,
       }
-      console.log(data)
       const response = await axiosJWT.post(`${USER_API}/bookNow`, data)
-      console.log(response,"............")
-      console.log('hiiiiiiiiiiiiiiiiiii')
+    
       const sessionId = response.data.id
       if (sessionId) {
         const result = await stripe?.redirectToCheckout({ sessionId })
         if (result?.error) console.error(result.error)
       }
-      const bookingId = response.data.booking.bookingId
-      
-      console.log(bookingId,"bookingid,jjjjjj")
+   
       navigate(`/payment_status/${id}?success=true`)
     } catch (error) {
       console.log("Error in creating order", error)

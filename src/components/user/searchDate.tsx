@@ -1,103 +1,82 @@
 import { useState, useRef, useEffect } from "react";
 import { faCalendarDays, faPerson } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { DateRange } from "react-date-range";
+import { DateRange, RangeKeyDict } from "react-date-range";
 import { format, addDays } from "date-fns";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
-import { useAppDispatch, useAppSelector } from "../../redux/store/store";
-import axios from "axios";
-import { USER_API } from "../../constants";
-import { setData } from "../../redux/slices/searchingSlice";
-import React from "react";
+import { useAppDispatch } from "../../redux/store/store";
 
-type optionType = {
+import { setData } from "../../redux/slices/searchingSlice";
+
+
+type OptionType = {
   adult: number;
   children: number;
   room: number;
 };
 
-type datesTypes = {
+type DatesType = {
   startDate: Date;
   endDate: Date;
 };
 
 const SearchBoxDetail = () => {
-  const data = useAppSelector(state => state.searchingSlice);
+
   const dispatch = useAppDispatch();
   const [openDate, setOpenDate] = useState(false);
   const [openOptions, setOpenOptions] = useState(false);
-  const [dates, setDates] = useState({
+  const [dates, setDates] = useState<DatesType>({
     startDate: new Date(),
     endDate: addDays(new Date(), 1),
   });
-  const [options, setOptions] = useState({
+  const [options, setOptions] = useState<OptionType>({
     adult: 2,
     children: 0,
     room: 1,
   });
 
-  const dateRef = useRef(null);
-  const optionsRef = useRef(null);
+  const dateRef = useRef<HTMLDivElement | null>(null);
+  const optionsRef = useRef<HTMLDivElement | null>(null);
 
-  const handleSearch = async (options: optionType, dates: datesTypes) => {
-    console.log(options, "options..........");
-    console.log(dates, "dates......");
+  const handleSearch = async (options: OptionType, dates: DatesType) => {
+   
 
     try {
-      const { adult, children, room } = options;
+      const { } = options;
       const { startDate, endDate } = dates;
-      console.log(startDate, "startDates......");
-      console.log(endDate, "endDates......");
+    
 
-      dispatch(setData({ options, dates: [{ startDate, endDate,}] }));
-
-    //   const { data } = await axios.get(`${USER_API}/searchedHotels`, {
-    //     params: {
-    //       adult,
-    //       children,
-    //       room,
-    //       startDate,
-    //       endDate,
-    //     },
-    //   });
-
+      dispatch(setData({ options, dates: [{ startDate, endDate }] }));
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleOption = (name: string, operation: string) => {
+  const handleOption = (name: keyof OptionType, operation: string) => {
     setOptions(prev => {
       return {
         ...prev,
-        [name]: operation === "i" ? options[name] + 1 : options[name] - 1,
+        [name]: operation === "i" ? prev[name] + 1 : prev[name] - 1,
       };
     });
   };
 
-  const handleDateChange = (item: { selection: { startDate: Date; endDate: Date } }) => {
-    const { startDate, endDate } = item.selection;
-    // Ensure endDate is at least one day after startDate
-    if (endDate <= startDate) {
-      setDates({
-        startDate: startDate,
-        endDate: addDays(startDate, 1),
-      });
-    } else {
-      setDates({
-        startDate: startDate,
-        endDate: endDate,
-      });
-    }
+  const handleDateChange = (ranges: RangeKeyDict) => {
+    const { selection } = ranges;
+    setDates({
+      startDate: selection.startDate ?? new Date(),
+      endDate: selection.endDate ?? addDays(new Date(), 1),
+    });
   };
+  
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dateRef.current && !dateRef.current.contains(event.target)) {
+      if (dateRef.current && !dateRef.current.contains(event.target as Node)) {
         setOpenDate(false);
       }
-      if (optionsRef.current && !optionsRef.current.contains(event.target)) {
+      if (optionsRef.current && !optionsRef.current.contains(event.target as Node)) {
         setOpenOptions(false);
       }
     };
@@ -109,7 +88,7 @@ const SearchBoxDetail = () => {
   }, []);
 
   return (
-    <div className="flex items-center space-x-4 py-1 px-3 bg-Alabaster  border-2 shadow-xl rounded-lg -mt-8 mx-auto max-w-fit">
+    <div className="flex items-center space-x-4 py-1 px-3 bg-Alabaster border-2 shadow-xl rounded-lg -mt-8 mx-auto max-w-fit">
       <div className="flex items-center space-x-2 cursor-pointer relative" ref={dateRef}>
         <FontAwesomeIcon icon={faCalendarDays} className="text-gray-500" />
         <span onClick={() => setOpenDate(!openDate)} className="text-gray-700">

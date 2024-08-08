@@ -23,10 +23,7 @@ const AddRoom: React.FC = () => {
         desc: values.description,
         roomNumbers: roomNumbers,
       }
-  console.log(data);
-
-
-  const response = await axiosJWT
+         await axiosJWT
       .post(
         `${OWNER_API}/addRoom/${values.hotelId}`,
         data)
@@ -76,6 +73,7 @@ const AddRoom: React.FC = () => {
           maxChildren: 0,
           price: "",
           desc: "",
+          roomNumber: "",
         }}
         validationSchema={hotelAddValidation}
         onSubmit={handleSubmit}
@@ -129,7 +127,7 @@ const AddRoom: React.FC = () => {
                     >
                       <option value="" label="Select a hotel" />
                       {hotels.map((hotel, index) => (
-                        <option key={index} value={hotel._id}>
+                        <option key={index} value={hotel._id.toString()}>
                           {hotel.name}
                         </option>
                       ))}

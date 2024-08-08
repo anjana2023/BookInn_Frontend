@@ -3,9 +3,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/reducer/reducer";
 import { Range } from "react-range";
 import { useNavigate } from "react-router-dom";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import useHotelDetails from "../../hooks/user/useHotelDetails";
-import useUserHotels from "../../hooks/user/useUserHotel";
 
 const STEP = 100;
 const MIN = 500;
@@ -55,7 +53,7 @@ const HotelData: React.FC<HotelDataProps> = ({ _id, imageUrls, name, place, stay
               <li>Error loading amenities</li>
             ) : hotel?.amenities?.length > 0 ? (
               <>
-                {hotel.amenities.slice(0, showMore ? undefined : 3).map((amenity, index) => (
+                {hotel.amenities.slice(0, showMore ? undefined : 3).map((amenity:any, index:any) => (
                   <li key={index} className="text-sm">{amenity}</li>
                 ))}
                 {hotel.amenities.length > 3 && (
@@ -83,7 +81,7 @@ const HotelData: React.FC<HotelDataProps> = ({ _id, imageUrls, name, place, stay
 };
 
 const HotelCards: React.FC = () => {
-  const navigate = useNavigate();
+
   const searchResults = useSelector((state: RootState) => state.destinationSlice.search);
   const [values, setValues] = useState([MIN, MAX]);
 
@@ -205,10 +203,10 @@ const HotelCards: React.FC = () => {
       <div className="col-span-12 lg:col-span-9 bg-gray-100 p-5">
         {searchResults.length > 0 ? (
           <div className="flex flex-col gap-4">
-            {searchResults.map(hotel => (
+            {searchResults.map((hotel :any)=> (
               <HotelData
-                key={hotel._id}
-                _id={hotel._id}
+                key={hotel._id.toString()}
+                _id={hotel._id.toString()}
                 imageUrls={hotel.imageUrls}
                 name={hotel.name}
                 place={hotel.place}

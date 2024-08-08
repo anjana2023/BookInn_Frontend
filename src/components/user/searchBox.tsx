@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { faCalendarDays, faPerson } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { DateRange } from "react-date-range";
@@ -7,51 +7,60 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useAppSelector } from "../../redux/store/store";
 
-const SearchBoxUser = ({ handleSearch }) => {
+interface Options {
+  adult: number;
+  children: number;
+  room: number;
+}
+
+interface Dates {
+  startDate: Date;
+  endDate: Date;
+}
+
+interface SearchBoxUserProps {
+  handleSearch: (destination: string, options: Options, dates: Dates) => void;
+}
+
+const SearchBoxUser: React.FC<SearchBoxUserProps> = ({ handleSearch }) => {
   const data = useAppSelector((state) => state.searchingSlice);
   const [openDate, setOpenDate] = useState(false);
   const [openOptions, setOpenOptions] = useState(false);
-  const [dates, setDates] = useState({
+  const [dates, setDates] = useState<Dates>({
     startDate: new Date(),
     endDate: addDays(new Date(), 1),
   });
-  const [options, setOptions] = useState({
+  const [options, setOptions] = useState<Options>({
     adult: 1,
     children: 0,
     room: 1,
   });
-  const [destination, setDestination] = useState(data.place);
+  const [destination, setDestination] = useState<string>(data.place || ""); // Provide a default value
 
-  const dateRef = useRef(null);
-  const optionsRef = useRef(null);
 
-  const handleOption = (name, operation) => {
+  const dateRef = useRef<HTMLDivElement | null>(null);
+  const optionsRef = useRef<HTMLDivElement | null>(null);
+
+  const handleOption = (name: keyof Options, operation: "i" | "d") => {
     setOptions((prev) => ({
       ...prev,
       [name]: operation === "i" ? options[name] + 1 : options[name] - 1,
     }));
   };
 
-  const handleDateChange = (item) => {
+  const handleDateChange = (item: any) => {
     const { startDate, endDate } = item.selection;
-    if (endDate <= startDate) {
-      setDates({
-        startDate: startDate,
-        endDate: addDays(startDate, 1),
-      });
-    } else {
-      setDates({
-        startDate: startDate,
-        endDate: endDate,
-      });
-    }
+    setDates({
+      startDate: startDate,
+      endDate: endDate <= startDate ? addDays(startDate, 1) : endDate,
+    });
   };
 
-  const handleClickOutside = (event) => {
-    if (dateRef.current && !dateRef.current.contains(event.target)) {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dateRef.current && !dateRef.current.contains(event.target as Node)) {
       setOpenDate(false);
     }
-    if (optionsRef.current && !optionsRef.current.contains(event.target)) {
+    if (optionsRef.current && !optionsRef.current.contains(event.target as Node)) {
       setOpenOptions(false);
     }
   };
@@ -73,7 +82,7 @@ const SearchBoxUser = ({ handleSearch }) => {
           onChange={(e) => setDestination(e.target.value)}
           className="flex-1 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <div className="relative">
+        <div className="relative" ref={dateRef}>
           <button
             onClick={() => setOpenDate(!openDate)}
             className="w-full p-3 flex justify-between items-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -103,7 +112,7 @@ const SearchBoxUser = ({ handleSearch }) => {
             </div>
           )}
         </div>
-        <div className="relative">
+        <div className="relative" ref={optionsRef}>
           <button
             onClick={() => setOpenOptions(!openOptions)}
             className="w-full p-3 flex justify-between items-center border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"

@@ -18,6 +18,6 @@ export const useFetchData = <T,>(url: string, options?: SWRConfiguration) => {
     data,
     isLoading: !error && !data,
     isError: error,
-    mutate: () => mutate(url)  // Export the mutate function
+    mutate: () => mutate(url) 
   };
 };

@@ -6,10 +6,8 @@ const uploadImagesToCloudinary = async (
   imagesFile: File[]
 ): Promise<string[]> => {
   try {
-    console.log("Images to upload:", imagesFile.length);
 
     const promises = imagesFile.map(async file => {
-      console.log("Uploading image:", file.name);
 
       const formData = new FormData();
       formData.append("file", file);
@@ -21,18 +19,15 @@ const uploadImagesToCloudinary = async (
           "Content-Type": "multipart/form-data",
         }, 
       });
-      console.log(response, "response");
       if (!response.data || !response.data.secure_url) {
         throw new Error("Failed to upload the file to Cloudinary");
       }
       const data = response.data;
-      console.log(data.secure_url,"////////////////////////url")
       return data.secure_url;
     });
 
     const uploadImageUrls = await Promise.all(promises);
-    console.log("Upload complete...........:", uploadImageUrls);
-    console.log("Upload complete:", uploadImageUrls);
+  
     return uploadImageUrls;
   } catch (error) {
     showToast("Error uploading images to Cloudinary", "error");

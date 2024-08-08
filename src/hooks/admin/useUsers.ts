@@ -5,7 +5,6 @@ import { ADMIN_API } from "../../constants";
 import showToast from "../../utils/toast";
 import { OwnerInterface } from "../../types/ownerInterface";
 
-// axios.defaults.withCredentials = true;
 
 const useUsers = () => {
   const [users, setUsers] = useState<UserInterface[]>([]);
@@ -37,7 +36,6 @@ export const useOwners = () => {
         const response = await axiosJWT.get(ADMIN_API + "/owners");
         const { owners } = response.data;
 
-        console.log(owners)
         setOwners(owners);
       } catch (error) {
         console.error(error);

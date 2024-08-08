@@ -6,7 +6,6 @@ import bookingImg from "../../assets/images/bookingssss.webp";
 import revenue from "../../assets/images/reven.png";
 import AreaChartComponent from "./AreaChart";
 import RevenueChart from "./RevenueChart";
-import React from "react";
 
 const DashBoard = () => {
   const {
@@ -20,7 +19,7 @@ const DashBoard = () => {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         <Card title="Users" total={userCount.toString()}>
           <img src={userImg} alt="user" className="w-full h-auto" />
         </Card>

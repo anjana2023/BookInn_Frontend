@@ -2,18 +2,16 @@ import { FC, useState, useEffect, SetStateAction } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { hotelAddValidation } from "../../utils/validation";
 import { FaTrashAlt } from "react-icons/fa";
-import axios from "axios";
 import { HotelInterface } from "../../types/hotelInterface";
 import showToast from "../../utils/toast";
 import { useNavigate, useParams } from "react-router-dom";
 import PhotoUploadModal from "../../components/owner/photoUploadModal";
 import { OWNER_API } from "../../constants";
-import { useFetchData } from "../../utils/fetcher";
 import UploadButton from "../../components/UploadButton";
 import OutlinedButton from "../../components/OutlinedButton";
-import React from "react";
 import axiosJWT from "../../utils/axiosService";
 import AutoCompleteInput from "./AutoCompleteInput";
+import mongoose from "mongoose";
 
 const EditHotelForm: FC = () => {
   const [hotelData, setHotelData] = useState<HotelInterface | null>(null);
@@ -54,7 +52,6 @@ const EditHotelForm: FC = () => {
   useEffect(() => {
     const fetchHotelData = async () => {
       try {
-        console.log("helloooo,..............");
         const { data } = await axiosJWT.get(`${OWNER_API}/hotelDetails/${id}`);
         setHotelData(data.Hotel);
         setImages(data.Hotel.imageUrls || []);
@@ -66,7 +63,6 @@ const EditHotelForm: FC = () => {
           searchLocation: data.Hotel.place || "",
           location: data.Hotel.location?.coordinates || [0, 0],
         });
-        console.log(data.Hotel, "fetched hotel data here ");
       } catch (error) {
         setError("Failed to fetch hotel details");
         console.error(error);
@@ -162,7 +158,6 @@ const EditHotelForm: FC = () => {
         isVerified: "pending",
       });
       showToast(response.data.message);
-      console.log(response.data, "responseeee");
       navigate("/owner/hotels");
     } catch (error) {
       console.error("Error updating hotel:", error);
@@ -170,13 +165,26 @@ const EditHotelForm: FC = () => {
     }
   };
 
+  if (loading) {
+    return <div>Loading...</div>; 
+  }
+
+  if (error) {
+    return <div>{error}</div>; 
+  }
+
+
   return (
     <>
       <Formik
         enableReinitialize
         initialValues={{
+          Hotel: hotelData?.Hotel || null,
+          _id: hotelData?._id || new mongoose.Types.ObjectId(),
           name: hotelData?.name || "",
-          stayType: hotelData?.stayType || "",
+          ownerId: hotelData?.ownerId ||null,
+          email: hotelData?.email || "", 
+          imageUrls: hotelData?.imageUrls || [],
           place: hotelData?.place || "",
           address: {
             streetAddress: hotelData?.address.streetAddress || "",
@@ -186,18 +194,29 @@ const EditHotelForm: FC = () => {
             pincode: hotelData?.address.pincode || "",
             country: hotelData?.address.country || "",
           },
-          description: hotelData?.description || "",
-          amenities: hotelData?.amenities || [],
           location: {
             type: hotelData?.location?.type || "",
             coordinates: hotelData?.location?.coordinates || [0, 0],
           },
+          isVerified: hotelData?.isVerified || "", 
+          stayType: hotelData?.stayType || "",
+          propertyRules: hotelData?.propertyRules || [], 
+          description: hotelData?.description || "",
+          amenities: hotelData?.amenities || [],
+          createdAt: hotelData?.createdAt || new Date(), 
+          updatedAt: hotelData?.updatedAt || new Date(), 
+          isBlocked: hotelData?.isBlocked || false, 
+          isApproved: hotelData?.isApproved || false, 
+          status: hotelData?.status || "", 
+          hotelDocument: hotelData?.hotelDocument || "", 
+          rejectedReason: hotelData?.rejectedReason || "", 
+          unavailbleDates: hotelData?.unavailbleDates || [], 
+          rooms: hotelData?.rooms || [], 
         }}
         validationSchema={hotelAddValidation}
-        validate={(values) => {
+        validate={() => {
           const errors: any = {};
 
-          // Validate propertyrules
           if (propertyRules.length < 2) {
             errors.propertyRules = "At least two rules are required";
           }
@@ -217,7 +236,7 @@ const EditHotelForm: FC = () => {
         }}
         onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue, dirty }) => (
+        {({ values, dirty }) => (
           <div className="px-4 py-7 md:px-14 flex justify-center">
             <div className="px-4 py-7 md:px-14 rounded-3xl shadow-lg border border-spacing-y-9  w-8/12   items-center ">
               <h1 className="p-6 text-2xl md:text-3xl font-bold mb-4 text-center">

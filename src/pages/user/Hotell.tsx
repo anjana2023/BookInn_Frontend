@@ -1,4 +1,3 @@
-import React from "react";
 import Navbar from "../../components/user/NavBar/Navbar";
 import Hotel from "./Hotels"
 const Hotelss=()=>{

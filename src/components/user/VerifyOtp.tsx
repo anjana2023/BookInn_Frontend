@@ -19,7 +19,6 @@ const VerifyOtp: React.FC = () => {
     },
     onSubmit: (values) => {
       const userid = getItemFromLocalStorage("userId");
-      console.log(userid,"......userid...........")
       const otp = values.otp.join("");
       if (userid) {
         axios

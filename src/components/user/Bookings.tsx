@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import axiosJWT from "../../utils/axiosService";
 import { USER_API } from "../../constants";
 import { BsCalendarCheck, BsCalendarX, BsBoxArrowRight } from "react-icons/bs";
-import React from "react";
 
 const BookingsListPage = () => {
   const [bookings, setBookings] = useState<any[]>([]);

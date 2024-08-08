@@ -1,4 +1,3 @@
-import React from "react";
 import useProfile from "../../hooks/user/UserProfile";
 
 const UserProfile = () => {

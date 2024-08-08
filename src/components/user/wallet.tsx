@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { USER_API } from '../../constants';
 import { fetcher } from '../../utils/fetcher';

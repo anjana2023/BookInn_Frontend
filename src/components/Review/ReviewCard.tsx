@@ -3,7 +3,6 @@ import { FaStar } from "react-icons/fa";
 import ProgressBar from "@ramonak/react-progress-bar";
 
 const ReviewCard: React.FC<any> = ({ review }) => {
-    console.log(review, "review in review card");
 
     const ratingCounts: { [key: number]: number } = review.reduce((acc:any, { rating }:any) => {
         if (rating >= 1 && rating <= 5) {

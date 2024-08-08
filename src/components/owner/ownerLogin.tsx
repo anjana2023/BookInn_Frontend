@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import { auth, googleProvider } from "../../firebase/config";
@@ -15,7 +15,6 @@ import { setItemToLocalStorage } from "../../utils/localStorage";
 import owner2 from "../../../src/assets/images/owner2.jpg";
 
 const LoginForm: React.FC = () => {
-  console.log("login fom owner");
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { values, touched, handleBlur, handleChange, errors, handleSubmit } =
@@ -29,16 +28,12 @@ const LoginForm: React.FC = () => {
         axios
           .post(OWNER_API + "/auth/login", { email, password })
           .then(({ data }) => {
-            console.log(data);
-            console.log(data);
-            console.log(data);
+           
 
-            const { message, access_token, refresh_token } = data;
+            const {  access_token, refresh_token } = data;
            
             const { name, role, _id } = data.owner;
-            console.log(name);
-            console.log(role);
-            console.log(_id);
+          
             setItemToLocalStorage('access_token', access_token); 
             setItemToLocalStorage("refresh_token",refresh_token)
             showToast(data.message, "success");
@@ -46,13 +41,12 @@ const LoginForm: React.FC = () => {
             navigate("/owner");
           })
           .catch(({ response }) => {
-            console.log(response);
             showToast(response?.data?.message, "error");
           });
       },
     });
 
-  const handleGoogleSignIn = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleGoogleSignIn = () => {
     signInWithPopup(auth, googleProvider)
       .then((userCredential) => {
         const user = userCredential.user;
@@ -66,7 +60,7 @@ const LoginForm: React.FC = () => {
         axios
           .post(OWNER_API + "/auth/googleSignIn", { owner: ownerData })
           .then(({ data }) => {
-            const { message, user,access_token, refresh_token } = data;
+            const { message,access_token, refresh_token } = data;
             const { name, role, _id } = data.owner;
             setItemToLocalStorage('access_token', access_token); 
         setItemToLocalStorage("refresh_token",refresh_token)
@@ -75,12 +69,10 @@ const LoginForm: React.FC = () => {
             navigate("/owner");
           })
           .catch((error) => {
-            console.log(error);
             showToast(error?.response?.data?.message, "error");
           });
       })
       .catch((error) => {
-        console.log(error);
         showToast(error.message, "error");
       });
   };

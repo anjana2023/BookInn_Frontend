@@ -1,7 +1,6 @@
 import { Outlet } from "react-router-dom";
 import ProfileSidebar from "../../components/owner/ProfileSidebar";
 import Navbar from "../../components/owner/Navbar/Navbar";
-import React from "react";
 import Bookings from "../../components/owner/BookingList";
 
 

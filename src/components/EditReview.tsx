@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactStars from "react-rating-stars-component";
 import uploadImagesToCloudinary from "../api/imageUpload";
-import axios from "axios";
 import { USER_API } from "../constants";
 import showToast from "../utils/toast";
 import axiosJWT from "../utils/axiosService";
@@ -23,12 +22,10 @@ const EditReview: React.FC<ModalProps> = ({ onClose, reviewId }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log(reviewId,"review idddddd");
     
     const fetchReview = async () => {
       try {
         const { data } = await axiosJWT.get(`${USER_API}/getRatingById/${reviewId}`);
-        console.log(data,"data");
         
         setDescription(data.result.description || "");
         setRating(data.result.rating || 0);

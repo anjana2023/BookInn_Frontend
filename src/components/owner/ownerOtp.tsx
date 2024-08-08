@@ -20,19 +20,12 @@ const VerifyOtp: React.FC = () => {
       otp: Array.from({ length: 6 }).fill(""),
     },
     onSubmit: (values) => {
-      console.log(
-        "hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
-      );
+    
 
       const ownerid = getItemFromLocalStorage("ownerId");
-      console.log(
-        ownerid,
-        "hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii"
-      );
+     
       const otp = values.otp.join("");
-      console.log(otp);
-      console.log(otp);
-      console.log(otp);
+   
 
       if (ownerid) {
         axios

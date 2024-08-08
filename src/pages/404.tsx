@@ -1,80 +1,29 @@
 import React from 'react';
-// import img from "../assets/images/not.png"
-const styles = {
-  errorPageWrap: {
-    width: '100%',
-    height: '100vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    background:'#fff',
-    color: '#fff',
-    textAlign: 'center',
-    fontFamily: "'Poppins', sans-serif",
-    overflow: 'hidden',
-  },
-  errorPage: {
-    padding: '20px',
-    borderRadius: '10px',
-    background: 'rgba(0, 0, 0, 0)',
-    boxShadow: '#fff',
-    position: 'relative',
-  },
-  h1: {
-    fontSize: '140px',
-    fontWeight: 'bold',
-    background: 'linear-gradient(to right, #f97316, #3b82f6)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    margin: '0',
-    animation: 'fadeIn 2s ease-in-out',
-  },
-  h2: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    margin: '20px 0',
-    color: '#f97316', // Orange color
-    textShadow: '0 2px 4px rgba(0, 0, 0, 0.6)', // Subtle shadow to enhance readability
-    animation: 'fadeIn 2s ease-in-out 0.5s',
-  },
-  button: {
-    display: 'inline-block',
-    padding: '10px 20px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#fff',
-    background: 'linear-gradient(to right, #f97316, #3b82f6)',
-    borderRadius: '5px',
-    textDecoration: 'none',
-    marginTop: '20px',
-    transition: 'background-color 0.3s ease',
-    cursor: 'pointer',
-  },
-  buttonHover: {
-    backgroundColor: '#fffff',
-  },
-  '@keyframes fadeIn': {
-    from: { opacity: 0 },
-    to: { opacity: 1 },
-  },
-};
+import { useNavigate } from 'react-router-dom';
 
 const ErrorPage: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    navigate(-1); // Navigate to the previous page
+  };
+
   return (
-    <div style={styles.errorPageWrap}>
-      <div style={styles.errorPage}>
-        <h1 style={styles.h1}>404</h1>
-        <h2 style={styles.h2}>Internal Server Error</h2>
-       {/* <div className="w-full h-full"> {img}</div> */}
-        <a 
-          href="#" 
+    <div className="flex items-center justify-center h-screen bg-white text-center font-poppins overflow-hidden">
+      <div className="p-6 rounded-lg bg-opacity-0 shadow-lg relative">
+        <h1 className="text-7xl font-bold bg-gradient-to-r from-orange-500 to-blue-500 bg-clip-text text-transparent mb-0 animate-fadeIn">
+          404
+        </h1>
+        <h2 className="text-2xl font-bold my-5 text-orange-500 shadow-md animate-fadeIn delay-500">
+          Internal Server Error
+        </h2>
+        <button 
+          onClick={handleGoBack} 
           title="Back to site" 
-          style={styles.button}
-          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = styles.buttonHover.backgroundColor)} 
-          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#ffff')}
+          className="inline-block px-5 py-2 text-lg font-bold text-white bg-gradient-to-r from-orange-500 to-blue-500 rounded-md transition-colors duration-300 hover:bg-opacity-70"
         >
           Go Back
-        </a>
+        </button>
       </div>
     </div>
   );

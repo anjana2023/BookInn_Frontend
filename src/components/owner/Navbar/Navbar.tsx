@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { RootState } from "../../../redux/reducer/reducer";
 import { useSelector } from "react-redux";
@@ -68,7 +68,7 @@ const Navbar = () => {
           {/* Authentication Buttons */}
           <div className="hidden lg:flex items-center gap-4">
             {owner.isAuthenticated && owner.role === "owner" ? (
-              <button onClick={handleLogOut} className="px-4 py-2 bg-blue-300 text-gray-900 uppercase rounded-lg hover:bg-blue-500">
+              <button onClick={handleLogOut} className="px-4 py-2 bg-orange-400 text-gray-900 uppercase rounded-lg hover:bg-blue-800">
                 SIGN OUT
               </button>
             ) : (
@@ -117,14 +117,14 @@ const Navbar = () => {
             </li>
             {owner.isAuthenticated && owner.role === "owner" ? (
               <li>
-                <button onClick={handleLogOut} className="w-full px-4 py-2 bg-orange-400 text-gray-900 uppercase rounded-lg hover:bg-blue-500">
+                <button onClick={handleLogOut} className="w-full px-4 py-2 bg-orange-500 text-white-uppercase rounded-lg hover:bg-orange-500">
                   SIGN OUT
                 </button>
               </li>
             ) : (
               <>
                 <li>
-                  <Link to="/owner/auth/login" className="block px-4 py-2 bg-white text-gray-900 uppercase rounded-lg hover:bg-gray-300">
+                  <Link to="/owner/auth/login" className="block px-4 py-2 bg-white text-gray-900 uppercase rounded-lg hover:bg-orange-500">
                     SIGN IN
                   </Link>
                 </li>

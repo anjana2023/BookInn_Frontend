@@ -1,9 +1,8 @@
 
 import React, { ChangeEvent, FormEvent, useState } from 'react';
 import emailjs from '@emailjs/browser';
-import aboutimg from '../../assets/images/about1.png';
-import Footer from '../../components/user/Footer/Footer';
-import Navbar from '../../components/user/NavBar/Navbar';
+import Footer from '../../components/owner/Footer/Footer';
+import Navbar from '../../components/owner/Navbar/Navbar';
 
 interface FormData {
   name: string;
@@ -31,9 +30,9 @@ const Contact: React.FC = () => {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-  const [msg, setMsg] = useState<string>(''); // State to hold success or error messages
-  const [msgType, setMsgType] = useState<'success' | 'error' | ''>(''); // State to hold message type
-  const [isLoading, setIsLoading] = useState<boolean>(false); // State to handle loading indicator
+  const [msg, setMsg] = useState<string>('');
+  const [msgType, setMsgType] = useState<'success' | 'error' | ''>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false); 
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -87,11 +86,11 @@ const Contact: React.FC = () => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (validateForm()) {
-      setIsLoading(true); // Show loading indicator
+      setIsLoading(true); 
       // Your EmailJS service ID, template ID, and Public Key
-      const serviceId = 'service_01i75zk'; // YOUR_SERVICE_ID
-      const templateId = 'template_6b4et5d'; // YOUR_TEMPLATE_ID
-      const publicKey = '1hQGu4XO57uQgBttm'; // YOUR_PUBLIC_KEY
+      const serviceId = 'service_01i75zk';
+      const templateId = 'template_6b4et5d';
+      const publicKey = '1hQGu4XO57uQgBttm'; 
 
       // Destructure formData for EmailJS templateParams
       const { name, email, mobilenumber, subject, message } = formData;
@@ -107,8 +106,8 @@ const Contact: React.FC = () => {
 
       // Send the email using EmailJS
       emailjs.send(serviceId, templateId, templateParams, publicKey)
-        .then((response) => {
-          console.log('Email sent successfully!', response);
+        .then(() => {
+        
           setMsgType('success');
           setMsg('Message sent successfully!');
           

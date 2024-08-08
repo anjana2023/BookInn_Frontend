@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-// import useOwners from "../../hooks/admin/useUsers";
 import UserData from "./OwnersData";
 import ReactPaginate from "react-paginate";
 import { ToastContainer } from "react-toastify";
 import { useOwners } from "../../hooks/admin/useUsers";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const Owners: React.FC = () => {
   const { owners } = useOwners();
- 
+
   const [currentPage, setCurrentPage] = useState(0);
   const itemsPerPage = 10;
+
+  if (!Array.isArray(owners) || owners.length === 0) {
+    return <div>No owners found.</div>;
+  }
 
   const totalPages = Math.ceil(owners.length / itemsPerPage);
 
@@ -24,8 +26,8 @@ const Owners: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[80%] overflow-hidden">
-     <ToastContainer
+    <div className="flex flex-col h-full overflow-hidden">
+      <ToastContainer
         position="top-center"
         autoClose={3000}
         hideProgressBar={false}
@@ -37,28 +39,28 @@ const Owners: React.FC = () => {
         pauseOnHover
         toastClassName="Toastify__toast-container--center"
       />
-      <div className="flex flex-col w-full flex-1">
-        <div className="p-6 flex-1 overflow-hidden">
+      <div className="flex flex-col w-full flex-1 overflow-hidden">
+        <div className="p-6 flex-1">
           <h1 className="text-2xl font-bold text-center mb-4">Vendors List</h1>
           <div className="overflow-x-auto">
             <table className="table-auto w-full">
               <thead>
                 <tr className="bg-gray-200">
-                <th className="px-6 py-3 text-left">S.No</th>
+                  <th className="px-6 py-3 text-left">S.No</th>
                   <th className="px-6 py-3 text-left">Name</th>
                   <th className="px-6 py-3 text-left">Email</th>
                   <th className="px-6 py-3 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {currentUsers.map((owner,index) => (
-                  <UserData {...owner} key={owner._id}  serialNo={indexOfFirstUser + index + 1} />
+                {currentUsers.map((owner, index) => (
+                  <UserData {...owner} key={owner._id} serialNo={indexOfFirstUser + index + 1} />
                 ))}
               </tbody>
             </table>
           </div>
         </div>
-        <div className="py-4">
+        <div className="py-3 flex justify-center">
           <ReactPaginate
             previousLabel={"Previous"}
             nextLabel={"Next"}

@@ -108,10 +108,7 @@ import {
             text: data.text,
             createdAt: new Date(),
           });
-          // socket?.emit("update_message_status", {
-          //   status: true,
-          //   recieverId: data.senderId,
-          // });
+      
         });
   
         socket?.on("get_message_status", (data) => {

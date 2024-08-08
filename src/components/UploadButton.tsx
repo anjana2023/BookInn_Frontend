@@ -1,18 +1,22 @@
-import { Button } from "flowbite-react"
-import React from "react"
-// import { Button } from "@material-tailwind/react"
+import React from 'react';
+import { Button } from 'flowbite-react';
 
+interface UploadButtonProps {
+  text: string; // Define text as a string
+  onclick: () => void; // Define onclick as a function that returns void
+}
 
-const UploadButton = ({ text, onclick }) => {
+const UploadButton: React.FC<UploadButtonProps> = ({ text, onclick }) => {
   const handleClick = () => {
-    onclick()
-  }
+    onclick();
+  };
+
   return (
     <div>
       <Button
-      size="sm"
+        size="sm"
         onClick={handleClick}
-        variant="outlined"
+        
         className="flex items-center gap-3"
       >
         <svg
@@ -32,7 +36,7 @@ const UploadButton = ({ text, onclick }) => {
         {text}
       </Button>
     </div>
-  )
-}
+  );
+};
 
-export default UploadButton
+export default UploadButton;

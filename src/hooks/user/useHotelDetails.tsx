@@ -1,10 +1,8 @@
 import useSWR from "swr"
-import axios from "axios"
 import { USER_API } from "../../constants"
 import axiosJWT from "../../utils/axiosService";
 
 const fetcher = (url: string) => {
-  const token = localStorage.getItem("access_token");
   
   return axiosJWT.get(url).then(res => res.data);
 }

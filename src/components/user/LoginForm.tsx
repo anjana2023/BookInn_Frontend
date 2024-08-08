@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import { auth, googleProvider } from "../../firebase/config";
@@ -10,7 +10,6 @@ import { USER_API } from "../../constants";
 import { setUser } from "../../redux/slices/userSlice";
 import { useNavigate,useSearchParams } from "react-router-dom";
 import showToast from "../../utils/toast";
-import { jwtDecode } from "jwt-decode";
 import { setItemToLocalStorage } from "../../utils/localStorage";
 import mal3 from "../../../src/assets/images/mal3.jpg";
 
@@ -29,9 +28,8 @@ const LoginForm: React.FC = () => {
         axios
           .post(USER_API + "/auth/login", { email, password })
           .then(({ data }) => {
-            const{message, access_token, refresh_token }= data;
+            const{ access_token, refresh_token }= data;
             const { name, role, _id } = data.user;
-            console.log(data);
             setItemToLocalStorage('access_token', access_token); 
           setItemToLocalStorage("refresh_token",refresh_token)
             showToast(data.message, "success");
@@ -41,7 +39,6 @@ const LoginForm: React.FC = () => {
             else navigate("/");
           })
           .catch(({ response }) => {
-            console.log(response);
             showToast(response?.data?.message, "error");
           });
       },
@@ -60,7 +57,6 @@ const LoginForm: React.FC = () => {
         .then(({ data }) => {
           const { message, access_token,refresh_token } = data;
           const { name, role, _id } = data.user;
-          console.log(userData);
           setItemToLocalStorage('access_token', access_token); 
           setItemToLocalStorage("refresh_token",refresh_token)
           showToast(message, "success");
@@ -68,7 +64,6 @@ const LoginForm: React.FC = () => {
           navigate("/");
         })
         .catch((response) => {
-          console.log(response);
           showToast(response?.data?.message, "error");
         });
     });

@@ -6,7 +6,6 @@ import {
   ProtectedUserRoute,
 } from "./protectedRoutes";
 import { PublicOwnerRoutes, PublicRoutes } from "./publicRoutes";
-import React from "react";
 import AddHotel from "../pages/owner/AddHotel";
 import HotelDetails from "../pages/user/HotelDetails";
 import OwnerHotels from "../pages/owner/ownerHotels";

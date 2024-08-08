@@ -9,7 +9,6 @@ import {
   HiOutlineUserGroup,
   HiOutlineHome,
   HiOutlineCheckCircle,
-  HiOutlineClipboardList,
 } from "react-icons/hi";
 
 const Sidebar: React.FC = () => {
@@ -30,7 +29,7 @@ const Sidebar: React.FC = () => {
   return (
     <>
       <button
-        className="fixed top-4 left-4 z-50 bg-gray-800 text-white p-2 rounded-md md:hidden"
+        className="fixed top-4 left-4 z-50 bg-gray-800 text-white  rounded-md md:hidden"
         onClick={toggleSidebar}
       >
         {isOpen ? "Close" : "Open"} Menu

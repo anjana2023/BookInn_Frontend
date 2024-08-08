@@ -27,4 +27,4 @@ const OnwerSlice = createSlice({
 
 export const { setOwner, clearOwner } = OnwerSlice.actions;
 export default OnwerSlice.reducer;
-export * from "./ownerSlice"; // Export UserState from here
+export * from "./ownerSlice"; 

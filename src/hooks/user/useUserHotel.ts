@@ -29,13 +29,11 @@ const useUserHotels = () => {
   const fetchHotels = async () => {
     try {
       const response = await axiosJWT.get(`${USER_API}/hotels`)
-      console.log(response,"......respomse.....")
       setHotelsData(response.data.Hotels)
       setLoadingState(false)
     } catch (err) {
       setErrorState("Failed to fetch hotels")
       setLoadingState(false)
-      console.error(err)
     }
   }
 
@@ -49,7 +47,6 @@ const useUserHotels = () => {
     }
   }, [error, dispatch])
 
-  console.log(hotelsData, "hotels....")
 
   type optionType = {
     adult: number
@@ -67,19 +64,13 @@ const useUserHotels = () => {
     options: optionType,
     dates: datesType
   ) => {
-  console.log(hotelsData, "hotels....")
-
-    console.log(place, "destination........")
-    console.log(options, "options..........")
-    console.log(dates, "dates......")
 
     dispatch(setLoading(true))
     setLoadingState(true)
     try {
       const { adult, children, room } = options
       const { startDate, endDate } = dates
-      console.log(startDate, "startDates......")
-      console.log(endDate, "endDates......")
+     
 
       const { data } = await axiosJWT.get(`${USER_API}/searchedHotels`, {
         params: {

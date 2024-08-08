@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { useAppSelector } from "../redux/store/store";
 import { Navigate, Outlet } from "react-router-dom";
-import React from "react";
 
 export const PublicRoutes: FC = () => {
   const { isAuthenticated, role } = useAppSelector((state) => state.userSlice);
