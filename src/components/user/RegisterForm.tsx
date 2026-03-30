@@ -38,7 +38,7 @@ const RegisterForm = () => {
           }, 1000);
         })
         .catch((error) => {
-          console.error("Error:", error); // Log the error
+          console.error("Errorsss:", error); // Log the error
           const { response } = error;
           if (response) {
             const { data } = response;

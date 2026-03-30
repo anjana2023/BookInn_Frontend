@@ -57,8 +57,8 @@ const LoginForm: React.FC = () => {
         .then(({ data }) => {
           const { message, access_token,refresh_token } = data;
           const { name, role, _id } = data.user;
-          setItemToLocalStorage('access_token', access_token); 
-          setItemToLocalStorage("refresh_token",refresh_token)
+      setItemToLocalStorage("access_token", access_token);
+setItemToLocalStorage("refresh_token", refresh_token);
           showToast(message, "success");
           dispatch(setUser({ isAuthenticated: true, name, role, id: _id }));
           navigate("/");

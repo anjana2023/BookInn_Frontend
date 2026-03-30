@@ -1,10 +1,10 @@
 import useSWR from "swr"
 import { USER_API } from "../../constants"
-import axiosJWT from "../../utils/axiosService";
+import axios from "axios";
 
 const fetcher = (url: string) => {
   
-  return axiosJWT.get(url).then(res => res.data);
+  return axios.get(url).then(res => res.data);
 }
 
 const useHotelDetails = (id: string | undefined) => {

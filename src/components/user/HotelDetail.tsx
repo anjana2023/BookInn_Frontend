@@ -250,7 +250,7 @@ return (
   <>
     <div className="max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <div className="grid grid-cols-1 md:grid-cols-7 gap-4 mb-6">
-        <div className="col-span-3">
+        <div className="col-span-3z">
           <img
             src={imageUrls[0]}
             alt="Houseboat"

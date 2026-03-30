@@ -66,6 +66,7 @@ export const MainRouter = () => {
           <Route path="/" element={<Home />} />
           <Route path="/AboutUs" element={<AboutUs />} />
           <Route path="/user/contact" element={<ContactSection />} />
+          <Route path="/user/hotels" element={<HotelCards />} />
           <Route path="/user/hotelDetails/:id" element={<HotelDetails />} />
           <Route path="" element={<PublicRoutes />}>
             <Route path="/user/auth/register" element={<Register />} />
@@ -83,7 +84,6 @@ export const MainRouter = () => {
 
           <Route path="/" element={<ProtectedUserRoute />}>
             <Route path="/" element={<Home />} /> 
-            <Route path="/user/hotels" element={<HotelCards />} />
             <Route path="/user/checkout/:id" element={<CheckoutPage />} />
             <Route path="/user/chat" element={<Chat />} />
             <Route path="/payment_status/:id" element={<PaymentCompleted />} />

@@ -10,6 +10,7 @@ import {
 } from "../../redux/slices/destinationSlice"
 import { setData } from "../../redux/slices/searchingSlice"
 import { HotelInterface } from "../../types/hotelInterface"
+import axios from "axios"
 
 const useUserHotels = () => {
   const dispatch = useDispatch()
@@ -28,7 +29,7 @@ const useUserHotels = () => {
 
   const fetchHotels = async () => {
     try {
-      const response = await axiosJWT.get(`${USER_API}/hotels`)
+      const response = await axios.get(`${USER_API}/hotels`)
       setHotelsData(response.data.Hotels)
       setLoadingState(false)
     } catch (err) {

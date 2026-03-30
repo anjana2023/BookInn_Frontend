@@ -81,8 +81,9 @@ const HomePage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const hotelsPerPage = 4; // Number of hotels per page
 
-  // Filter only approved and non-blocked hotels
+
   const approvedAndNonBlockedHotels = hotels.filter(hotel => hotel.isApproved && !hotel.isBlocked);
+  
 
   const totalPages = Math.ceil(approvedAndNonBlockedHotels.length / hotelsPerPage);
 
@@ -97,6 +98,7 @@ const HomePage: React.FC = () => {
   // Get hotels for the current page
   const startIndex = currentPage * hotelsPerPage;
   const currentHotels = approvedAndNonBlockedHotels.slice(startIndex, startIndex + hotelsPerPage);
+  
 
   return (
     <div className="py-10 px-4 md:px-8 lg:px-12">
@@ -110,9 +112,9 @@ const HomePage: React.FC = () => {
        {currentHotels.length > 0 ? (
   currentHotels.map((hotel) => (
     <HotelData
-      key={hotel._id.toString()} // Convert ObjectId to string for the key
+      key={hotel._id.toString()} 
       {...{
-        _id: hotel._id.toString(), // Convert ObjectId to string
+        _id: hotel._id.toString(), 
         imageUrls: hotel.imageUrls,
         name: hotel.name,
         place: hotel.place,

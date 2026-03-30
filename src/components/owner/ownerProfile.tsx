@@ -59,12 +59,12 @@ const OwnerProfile = () => {
             Email:
           </label>
           <input
-            type="email"
-            id="email"
             className="w-full px-3 py-2 text-black border border-gray-800 rounded-md focus:outline-none focus:ring focus:border-blue-500"
-            value={formData?.email ?? ""}
-            name="email"
-            readOnly
+  id="email"
+  value={formData?.email ?? ""}
+  name="email"
+  onChange={handleInputChange}
+          
           />
         </div>
         <div className="mb-4">
